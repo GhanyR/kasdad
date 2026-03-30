@@ -905,7 +905,7 @@ function CombineSection({ theme }) {
 
 // ─── MAIN APP ───
 export default function ImbalancedClassificationViz() {
-  const [mode, setMode] = useState("dark");
+  const [mode, setMode] = useState("light");
   const [activeSection, setActiveSection] = useState("intro");
   const [time, setTime] = useState(0);
   const t = themes[mode];

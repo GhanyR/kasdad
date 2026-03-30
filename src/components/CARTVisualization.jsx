@@ -774,7 +774,7 @@ function ProsConsSection({ t }) {
 
 // ========== MAIN APP ==========
 export default function CARTVisualization() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [section, setSection] = useState("overview");
   const t = dark ? themes.dark : themes.light;
 

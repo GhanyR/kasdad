@@ -14,9 +14,40 @@ const WEEK_DATES: Record<number, string> = {
   8: "30 Mar – 1 Apr 2026",
 };
 
+const themes = {
+  light: {
+    bg: "#f8f7f4", bg2: "#ffffff", surface: "#f0eff2",
+    text: "#1a1a2e", textMuted: "#6b6b80", textDim: "#9999aa",
+    accent: "#5046e5", accent2: "#e5466b",
+    border: "#e5e5ea", borderLight: "#f0f0f4",
+    cardBg: "#ffffff", cardBorder: "rgba(0,0,0,0.06)", cardHover: "rgba(0,0,0,0.02)",
+    heroBg: "linear-gradient(135deg, #f0f0ff 0%, #fff5f5 50%, #f0fff5 100%)",
+    searchBg: "rgba(0,0,0,0.03)", searchBorder: "rgba(0,0,0,0.08)",
+    navBg: "rgba(248,247,244,0.92)",
+    pillBg: "rgba(0,0,0,0.04)", pillText: "#666",
+    pillActiveBg: "#5046e5", pillActiveText: "#fff",
+    footerText: "#aaa",
+  },
+  dark: {
+    bg: "#0a0a12", bg2: "#111119", surface: "#15151f",
+    text: "#e8e8f2", textMuted: "#8888a0", textDim: "#555570",
+    accent: "#8b80ff", accent2: "#ff6b9d",
+    border: "#222235", borderLight: "#1a1a2e",
+    cardBg: "rgba(255,255,255,0.03)", cardBorder: "rgba(255,255,255,0.06)", cardHover: "rgba(255,255,255,0.06)",
+    heroBg: "linear-gradient(135deg, #0a0a20 0%, #120a14 50%, #0a120a 100%)",
+    searchBg: "rgba(255,255,255,0.04)", searchBorder: "rgba(255,255,255,0.08)",
+    navBg: "rgba(10,10,18,0.92)",
+    pillBg: "rgba(255,255,255,0.06)", pillText: "#888",
+    pillActiveBg: "#8b80ff", pillActiveText: "#fff",
+    footerText: "#444",
+  },
+};
+
 export default function Home() {
+  const [dark, setDark] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const t = dark ? themes.dark : themes.light;
 
   const filtered = useMemo(() => {
     let items = MATERIALS;
@@ -27,7 +58,7 @@ export default function Home() {
         (m) =>
           m.title.toLowerCase().includes(q) ||
           m.subtitle.toLowerCase().includes(q) ||
-          m.topics.some((t) => t.toLowerCase().includes(q))
+          m.topics.some((tp) => tp.toLowerCase().includes(q))
       );
     }
     return items;
@@ -44,107 +75,101 @@ export default function Home() {
   }, [filtered]);
 
   const catOrder: (keyof typeof CATEGORIES)[] = [
-    "foundations",
-    "data",
-    "models",
-    "evaluation",
-    "exam",
+    "foundations", "data", "models", "evaluation", "exam",
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Ambient gradients */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-indigo-600/[0.04] blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] rounded-full bg-violet-600/[0.04] blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.02] blur-3xl" />
-      </div>
-
+    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'Segoe UI', -apple-system, system-ui, sans-serif", transition: "background 0.4s, color 0.4s" }}>
       {/* Hero */}
-      <header className="relative border-b border-white/[0.06] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/40 via-transparent to-violet-950/30" />
-        <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-14">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="text-xs font-bold tracking-[3px] text-indigo-400/80 uppercase font-mono">
+      <header style={{ background: t.heroBg, borderBottom: `1px solid ${t.border}`, position: "relative", overflow: "hidden" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 24px 44px", position: "relative" }}>
+          {/* Theme toggle */}
+          <button
+            onClick={() => setDark(!dark)}
+            style={{
+              position: "absolute", top: 24, right: 24,
+              width: 52, height: 28, borderRadius: 14, border: "none", cursor: "pointer",
+              background: dark ? "#333" : "#ddd",
+              transition: "background 0.3s",
+              display: "flex", alignItems: "center", padding: "0 3px",
+            }}
+          >
+            <div style={{
+              width: 22, height: 22, borderRadius: 11,
+              background: dark ? "#0a0a12" : "#fff",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+              transform: dark ? "translateX(24px)" : "translateX(0)",
+              transition: "transform 0.3s, background 0.3s",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 12,
+            }}>
+              {dark ? "🌙" : "☀️"}
+            </div>
+          </button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: t.accent, textTransform: "uppercase", fontFamily: "monospace" }}>
               CSGE603130
             </span>
-            <span className="text-white/20">•</span>
-            <span className="text-xs font-medium text-white/40">
+            <span style={{ color: t.textDim }}>•</span>
+            <span style={{ fontSize: 12, color: t.textMuted }}>
               Genap 2025/2026 · Fasilkom UI
             </span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] mb-4">
-            <span className="bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">
-              Kecerdasan Artifisial &
-            </span>
+          <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1, lineHeight: 1.15, marginBottom: 14 }}>
+            <span style={{ color: t.text }}>Kecerdasan Artifisial &</span>
             <br />
-            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+            <span style={{ background: `linear-gradient(135deg, ${t.accent}, ${t.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               Sains Data Dasar
             </span>
           </h1>
-          <p className="text-white/50 text-lg max-w-2xl leading-relaxed mb-8">
+          <p style={{ color: t.textMuted, fontSize: 16, maxWidth: 560, lineHeight: 1.7, marginBottom: 24 }}>
             Visualisasi interaktif seluruh materi UTS — dari AI fundamentals,
             search algorithms, data science, hingga machine learning models.
           </p>
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2 text-sm text-white/40">
-              <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
-              <span>{MATERIALS.length} Materi Interaktif</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-white/40">
-              <span className="w-2 h-2 rounded-full bg-amber-500/80" />
-              <span>8 Minggu Perkuliahan</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-white/40">
-              <span className="w-2 h-2 rounded-full bg-rose-500/80" />
-              <span>UTS Ready</span>
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+            {[
+              { color: "#16a34a", label: `${MATERIALS.length} Materi Interaktif` },
+              { color: "#d97706", label: "8 Minggu Perkuliahan" },
+              { color: "#dc2626", label: "UTS Ready" },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: t.textMuted }}>
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: item.color }} />
+                {item.label}
+              </div>
+            ))}
           </div>
         </div>
       </header>
 
       {/* Search + Filter */}
-      <div className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#0a0a12]/90 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center gap-3 flex-wrap">
-          <div className="relative flex-1 min-w-[200px] max-w-md">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm">
-              🔍
-            </span>
+      <div style={{
+        position: "sticky", top: 0, zIndex: 50,
+        borderBottom: `1px solid ${t.border}`,
+        background: t.navBg, backdropFilter: "blur(16px)",
+      }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "10px 24px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ position: "relative", flex: "1 1 200px", maxWidth: 360 }}>
+            <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 14, color: t.textDim }}>🔍</span>
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari materi, topik, atau keyword..."
-              className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-indigo-500/50 focus:bg-white/[0.06] transition-all"
+              style={{
+                width: "100%", background: t.searchBg, border: `1px solid ${t.searchBorder}`,
+                borderRadius: 10, padding: "9px 14px 9px 36px", fontSize: 13,
+                color: t.text, outline: "none", fontFamily: "inherit",
+              }}
             />
           </div>
-          <div className="flex gap-1.5 overflow-x-auto">
-            <button
-              onClick={() => setActiveCategory(null)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                !activeCategory
-                  ? "bg-white/10 text-white border border-white/15"
-                  : "text-white/40 hover:text-white/60 border border-transparent"
-              }`}
-            >
-              Semua
-            </button>
+          <div style={{ display: "flex", gap: 4, overflowX: "auto" }}>
+            <FilterPill active={!activeCategory} onClick={() => setActiveCategory(null)} t={t}>Semua</FilterPill>
             {catOrder.map((key) => {
               const cat = CATEGORIES[key];
               return (
-                <button
-                  key={key}
-                  onClick={() =>
-                    setActiveCategory(activeCategory === key ? null : key)
-                  }
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                    activeCategory === key
-                      ? "bg-white/10 text-white border border-white/15"
-                      : "text-white/40 hover:text-white/60 border border-transparent"
-                  }`}
-                >
-                  <span>{cat.icon}</span>
-                  {cat.label}
-                </button>
+                <FilterPill key={key} active={activeCategory === key} onClick={() => setActiveCategory(activeCategory === key ? null : key)} t={t}>
+                  {cat.icon} {cat.label}
+                </FilterPill>
               );
             })}
           </div>
@@ -152,13 +177,11 @@ export default function Home() {
       </div>
 
       {/* Materials Grid */}
-      <main className="flex-1 max-w-6xl mx-auto px-6 py-10 w-full">
+      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px" }}>
         {filtered.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-5xl mb-4">🔍</div>
-            <p className="text-white/40 text-lg">
-              Tidak ada materi yang cocok dengan pencarianmu.
-            </p>
+          <div style={{ textAlign: "center", padding: "80px 0" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
+            <p style={{ color: t.textMuted, fontSize: 16 }}>Tidak ada materi yang cocok.</p>
           </div>
         )}
 
@@ -167,19 +190,15 @@ export default function Home() {
           if (!items || items.length === 0) return null;
           const cat = CATEGORIES[catKey];
           return (
-            <section key={catKey} className="mb-14">
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-xl">{cat.icon}</span>
-                <h2 className="text-lg font-bold text-white/90 tracking-tight">
-                  {cat.label}
-                </h2>
-                <span className="text-xs font-mono text-white/25 ml-1">
-                  {items.length} materi
-                </span>
+            <section key={catKey} style={{ marginBottom: 44 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <span style={{ fontSize: 20 }}>{cat.icon}</span>
+                <h2 style={{ fontSize: 17, fontWeight: 700, color: t.text, margin: 0 }}>{cat.label}</h2>
+                <span style={{ fontSize: 12, color: t.textDim, fontFamily: "monospace" }}>{items.length}</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((m, i) => (
-                  <MaterialCard key={m.slug} material={m} index={i} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
+                {items.map((m) => (
+                  <MaterialCard key={m.slug} material={m} t={t} />
                 ))}
               </div>
             </section>
@@ -188,89 +207,65 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.06] py-8 text-center">
-        <p className="text-white/25 text-sm">
-          CSGE603130 — Kecerdasan Artifisial dan Sains Data Dasar
-        </p>
-        <p className="text-white/15 text-xs mt-1">
-          Fakultas Ilmu Komputer · Universitas Indonesia · Genap 2025/2026
-        </p>
+      <footer style={{ borderTop: `1px solid ${t.border}`, padding: "28px 24px", textAlign: "center" }}>
+        <p style={{ color: t.footerText, fontSize: 13 }}>CSGE603130 — Kecerdasan Artifisial dan Sains Data Dasar</p>
+        <p style={{ color: t.footerText, fontSize: 11, marginTop: 4, opacity: 0.7 }}>Fakultas Ilmu Komputer · Universitas Indonesia · Genap 2025/2026</p>
       </footer>
     </div>
   );
 }
 
-function MaterialCard({
-  material: m,
-  index,
-}: {
-  material: Material;
-  index: number;
-}) {
+function FilterPill({ active, onClick, children, t }: { active: boolean; onClick: () => void; children: React.ReactNode; t: typeof themes.light }) {
   return (
-    <Link href={`/materi/${m.slug}`} className="group block">
-      <div
-        className="relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 overflow-hidden"
-        style={{
-          animationDelay: `${index * 50}ms`,
-        }}
-      >
-        {/* Top gradient accent */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{
-            background: `linear-gradient(90deg, ${m.color}, ${m.color}60)`,
-          }}
-        />
+    <button onClick={onClick} style={{
+      padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer",
+      background: active ? t.pillActiveBg : t.pillBg,
+      color: active ? t.pillActiveText : t.pillText,
+      fontSize: 12, fontWeight: 600, whiteSpace: "nowrap",
+      transition: "all 0.2s", fontFamily: "inherit",
+      display: "flex", alignItems: "center", gap: 4,
+    }}>
+      {children}
+    </button>
+  );
+}
 
-        <div className="flex items-start gap-3.5 mb-3">
-          <span className="text-2xl flex-shrink-0 mt-0.5">{m.icon}</span>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                className="text-[10px] font-bold tracking-wider uppercase font-mono"
-                style={{ color: m.color + "cc" }}
-              >
+function MaterialCard({ material: m, t }: { material: Material; t: typeof themes.light }) {
+  return (
+    <Link href={`/materi/${m.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+      <div style={{
+        borderRadius: 14, border: `1px solid ${t.cardBorder}`, background: t.cardBg,
+        padding: "18px 20px", transition: "all 0.25s", cursor: "pointer",
+        position: "relative", overflow: "hidden",
+      }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = m.color + "50"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${m.color}12`; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderColor = t.cardBorder; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+      >
+        <div style={{ display: "flex", alignItems: "start", gap: 12, marginBottom: 10 }}>
+          <span style={{ fontSize: 24, flexShrink: 0, marginTop: 2 }}>{m.icon}</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", fontFamily: "monospace", color: m.color }}>
                 Week {m.week}
               </span>
               {WEEK_DATES[m.week] && (
-                <span className="text-[10px] text-white/20">
-                  {WEEK_DATES[m.week]}
-                </span>
+                <span style={{ fontSize: 10, color: t.textDim }}>{WEEK_DATES[m.week]}</span>
               )}
             </div>
-            <h3
-              className="text-[15px] font-bold text-white/90 group-hover:text-white transition-colors leading-snug"
-            >
-              {m.title}
-            </h3>
-            <p className="text-xs text-white/40 mt-0.5 leading-relaxed">
-              {m.subtitle}
-            </p>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: t.text, margin: 0, lineHeight: 1.3 }}>{m.title}</h3>
+            <p style={{ fontSize: 12, color: t.textMuted, margin: "3px 0 0", lineHeight: 1.4 }}>{m.subtitle}</p>
           </div>
         </div>
-
-        <div className="flex flex-wrap gap-1.5 mt-3">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
           {m.topics.slice(0, 4).map((topic) => (
-            <span
-              key={topic}
-              className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-white/35"
-            >
-              {topic}
-            </span>
+            <span key={topic} style={{
+              fontSize: 10, fontWeight: 500, padding: "2px 8px", borderRadius: 6,
+              background: t.pillBg, color: t.textMuted,
+            }}>{topic}</span>
           ))}
           {m.topics.length > 4 && (
-            <span className="text-[10px] text-white/25">
-              +{m.topics.length - 4}
-            </span>
+            <span style={{ fontSize: 10, color: t.textDim }}>+{m.topics.length - 4}</span>
           )}
-        </div>
-
-        {/* Arrow */}
-        <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
-          <span className="text-xs" style={{ color: m.color }}>
-            →
-          </span>
         </div>
       </div>
     </Link>

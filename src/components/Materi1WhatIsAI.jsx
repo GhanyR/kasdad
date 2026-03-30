@@ -577,7 +577,7 @@ function MLSection({ t }) {
 // ═══════════ MAIN ═══════════
 
 export default function App() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [sec, setSec] = useState("def");
   const t = dark ? P.dark : P.light;
   const R = { def: DefSection, agent: AgentSection, env: EnvSection, atype: ATypeSection, taxo: TaxoSection, hist: HistSection, ml: MLSection };
@@ -595,7 +595,7 @@ export default function App() {
           </div>
           <h1 style={{ fontSize: 19, fontWeight: 800, color: t.text, letterSpacing: -0.3 }}>Kecerdasan Artifisial</h1>
         </div>
-        <button onClick={() => setDark(!dark)} style={{ background: "none", border: `1px solid ${t.border}`, borderRadius: 10, width: 40, height: 40, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{dark ? "☀️" : "🌙"}</button>
+        <button onClick={() => setDark(!dark)} style={{ background: t.card, border: `1px solid ${t.border}`, borderRadius: 10, width: 40, height: 40, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{dark ? "☀️" : "🌙"}</button>
       </div>
 
       <div style={{ padding: "8px 12px", overflowX: "auto", display: "flex", gap: 4, borderBottom: `1px solid ${t.border}`, background: t.bg+"ee", backdropFilter: "blur(12px)", position: "sticky", top: 68, zIndex: 99 }}>

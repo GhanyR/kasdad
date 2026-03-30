@@ -17,7 +17,7 @@ function runAStar(s,g){const st=[];const pq=[{c:s,p:[s],g:0,h:CITIES[s].h,f:CITI
 const ALGOS={"BFS":runBFS,"DFS":runDFS,"UCS":runUCS,"GBFS":runGBFS,"A*":runAStar};
 
 export default function App(){
-const[dk,setDk]=useState(true);
+const[dk,setDk]=useState(false);
 const[tab,setTab]=useState("overview");
 const[algo,setAlgo]=useState("BFS");
 const[step,setSt]=useState(0);

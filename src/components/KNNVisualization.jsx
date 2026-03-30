@@ -1093,7 +1093,7 @@ function SectionProsCons({ t }) {
 //  MAIN APP
 // ══════════════════════════════════════════
 export default function App() {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [activeSection, setActiveSection] = useState("overview");
   const t = THEMES[theme];
 

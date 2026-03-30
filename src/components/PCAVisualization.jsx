@@ -892,7 +892,7 @@ function SectionTitle({ t, icon, title }) {
 
 // ═══════════ MAIN APP ═══════════
 export default function PCAVisualization() {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [activeSection, setActiveSection] = useState("intro");
   const t = THEMES[theme];
 

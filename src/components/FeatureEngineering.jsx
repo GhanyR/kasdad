@@ -755,7 +755,7 @@ const CurseDimDemo = ({ t }) => {
 // ═══════════════════════════════════════════════════════════
 
 export default function FeatureEngineeringViz() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [section, setSection] = useState("overview");
   const t = dark ? T.dark : T.light;
 

@@ -749,7 +749,7 @@ function PerfSection({ dark }) {
 // ═══════════════ MAIN APP ═══════════════
 
 export default function RandomForestViz() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [activeSection, setActiveSection] = useState("cart");
 
   const theme = {

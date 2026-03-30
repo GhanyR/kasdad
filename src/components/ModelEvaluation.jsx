@@ -571,7 +571,7 @@ function MetricChooser({ t }) {
 
 // ============ MAIN APP ============
 export default function ModelEvaluationViz() {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const t = isDark ? themes.dark : themes.light;
 

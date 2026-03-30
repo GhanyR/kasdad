@@ -1058,7 +1058,7 @@ function ImpactTableSection({ t }) {
 // MAIN APP
 // ══════════════════════════════════════════════════
 export default function BiasVarianceApp() {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const t = isDark ? themes.dark : themes.light;
 

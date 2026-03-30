@@ -744,7 +744,7 @@ function MethodsSec({ c }) {
 
 // ═══════ MAIN ═══════
 export default function App() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [nav, setNav] = useState("motivasi");
   const c = dark ? TH.dark : TH.light;
   useEffect(() => {

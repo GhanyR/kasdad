@@ -805,7 +805,7 @@ function TopicOverview({ dark }) {
 // ═══════════════ MAIN APP ═══════════════
 
 export default function KASDADExamPractice() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [tab, setTab] = useState("overview");
   const [filter, setFilter] = useState("all");
 
