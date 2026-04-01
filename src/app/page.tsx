@@ -119,7 +119,7 @@ export default function Home() {
           <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1, lineHeight: 1.15, marginBottom: 14 }}>
             <span style={{ color: t.text }}>Kecerdasan Artifisial &</span>
             <br />
-            <span style={{ background: `linear-gradient(135deg, ${t.accent}, ${t.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span style={{ background: `linear-gradient(135deg, ${t.accent}, ${t.accent2})`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent" }}>
               Sains Data Dasar
             </span>
           </h1>
