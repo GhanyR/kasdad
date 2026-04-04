@@ -588,6 +588,7 @@ function MLSection({ t }) {
 export default function App() {
   const [dark, setDark] = useState(false);
   const [sec, setSec] = useState("def");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTS.map(s=>s.id),sec,setSec);}catch{}
   const t = dark ? P.dark : P.light;
   const R = { def: DefSection, agent: AgentSection, env: EnvSection, atype: ATypeSection, taxo: TaxoSection, hist: HistSection, ml: MLSection };
   const Content = R[sec];

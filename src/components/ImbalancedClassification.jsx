@@ -907,6 +907,7 @@ function CombineSection({ theme }) {
 export default function ImbalancedClassificationViz() {
   const [mode, setMode] = useState("light");
   const [activeSection, setActiveSection] = useState("intro");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const [time, setTime] = useState(0);
   const t = themes[mode];
 

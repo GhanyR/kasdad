@@ -751,6 +751,7 @@ function PerfSection({ dark }) {
 export default function RandomForestViz() {
   const [dark, setDark] = useState(false);
   const [activeSection, setActiveSection] = useState("cart");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
 
   const theme = {
     bg: dark ? "#0b0f1a" : "#f8fafc",

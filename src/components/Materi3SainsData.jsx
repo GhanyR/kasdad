@@ -746,6 +746,7 @@ function MethodsSec({ c }) {
 export default function App() {
   const [dark, setDark] = useState(false);
   const [nav, setNav] = useState("motivasi");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(NAV.map(s=>s.id),nav,setNav);}catch{}
   const c = dark ? TH.dark : TH.light;
   useEffect(() => {
     const h = () => { let cur = "motivasi"; for (const s of NAV) { const el = document.getElementById(s.id); if (el && el.getBoundingClientRect().top <= 160) cur = s.id; } setNav(cur); };

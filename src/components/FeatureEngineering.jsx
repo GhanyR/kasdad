@@ -770,6 +770,7 @@ export default function FeatureEngineeringViz() {
     { id: "wrapper", label: "Wrapper", icon: "🔄" },
     { id: "embedded", label: "Embedded", icon: "🧬" },
   ];
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(sections.map(s=>s.id),section,setSection);}catch{}
 
   return (
     <div style={{

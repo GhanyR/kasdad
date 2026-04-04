@@ -776,6 +776,7 @@ function ProsConsSection({ t }) {
 export default function CARTVisualization() {
   const [dark, setDark] = useState(false);
   const [section, setSection] = useState("overview");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),section,setSection);}catch{}
   const t = dark ? themes.dark : themes.light;
 
   return (

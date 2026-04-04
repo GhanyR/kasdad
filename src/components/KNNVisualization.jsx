@@ -1095,6 +1095,7 @@ function SectionProsCons({ t }) {
 export default function App() {
   const [theme, setTheme] = useState("light");
   const [activeSection, setActiveSection] = useState("overview");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const t = THEMES[theme];
 
   const renderSection = () => {

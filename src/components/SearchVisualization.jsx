@@ -19,6 +19,7 @@ const ALGOS={"BFS":runBFS,"DFS":runDFS,"UCS":runUCS,"GBFS":runGBFS,"A*":runAStar
 export default function App(){
 const[dk,setDk]=useState(false);
 const[tab,setTab]=useState("overview");
+try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["overview","concepts","uninformed","informed","sim","compare"],tab,setTab);}catch{}
 const[algo,setAlgo]=useState("BFS");
 const[step,setSt]=useState(0);
 const[steps,setSteps]=useState([]);

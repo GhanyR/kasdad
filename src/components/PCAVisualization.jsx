@@ -894,6 +894,7 @@ function SectionTitle({ t, icon, title }) {
 export default function PCAVisualization() {
   const [theme, setTheme] = useState("light");
   const [activeSection, setActiveSection] = useState("intro");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const t = THEMES[theme];
 
   const renderSection = () => {

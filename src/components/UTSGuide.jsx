@@ -412,6 +412,7 @@ const F = {
 function App(){
   const [dark,setDark]=useState(false);
   const [tab,setTab]=useState("map");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["map","quiz","predict","formulas"],tab,setTab);}catch{}
   const [sel,setSel]=useState(null);
   const [openSub,setOpenSub]=useState(null);
   const [qi,setQi]=useState(0);

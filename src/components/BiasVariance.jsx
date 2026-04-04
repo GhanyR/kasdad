@@ -1060,6 +1060,7 @@ function ImpactTableSection({ t }) {
 export default function BiasVarianceApp() {
   const [isDark, setIsDark] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(sections.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const t = isDark ? themes.dark : themes.light;
 
   const renderSection = () => {

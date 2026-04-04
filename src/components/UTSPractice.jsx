@@ -807,6 +807,7 @@ function TopicOverview({ dark }) {
 export default function KASDADExamPractice() {
   const [dark, setDark] = useState(false);
   const [tab, setTab] = useState("overview");
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["overview","practice","formulas"],tab,setTab);}catch{}
   const [filter, setFilter] = useState("all");
 
   const bg = dark ? "#0f172a" : "#f8fafc";
