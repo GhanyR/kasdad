@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');`;
 
@@ -892,6 +892,18 @@ export default function ModelEvaluationViz() {
     }
   };
 
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Register tabs for swipe navigation
+  try { const { useTabSwipe } = require("@/lib/SwipeNavigationContext"); useTabSwipe(SECTIONS.map(s => s.id), activeSection, setActiveSection); } catch {}
+
   return (
     <div style={{ fontFamily: "'Outfit', sans-serif", background: t.bg, minHeight: "100vh", color: t.text, transition: "all 0.3s" }}>
       <style>{FONTS}{`
@@ -902,11 +914,11 @@ export default function ModelEvaluationViz() {
       `}</style>
 
       {/* Header */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, background: t.glassBg, backdropFilter: t.glassBlur, borderBottom: `1px solid ${t.border}`, padding: "12px 24px" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: t.glassBg, backdropFilter: t.glassBlur, borderBottom: `1px solid ${t.border}`, padding: isMobile ? "10px 12px" : "12px 24px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.accent, letterSpacing: 2, fontWeight: 600 }}>MATERI 09 · KASDAD</div>
-            <h1 style={{ fontFamily: "'Crimson Pro'", fontSize: 22, fontWeight: 400, color: t.text }}>Supervised Model Evaluation</h1>
+            <h1 style={{ fontFamily: "'Crimson Pro'", fontSize: isMobile ? 18 : 22, fontWeight: 400, color: t.text }}>Supervised Model Evaluation</h1>
           </div>
           <button onClick={() => setIsDark(!isDark)} style={{
             padding: "6px 14px", borderRadius: 8, border: `1px solid ${t.border}`,
@@ -917,27 +929,52 @@ export default function ModelEvaluationViz() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px", display: "flex", gap: 20 }}>
-        {/* Sidebar */}
-        <div style={{ width: 200, flexShrink: 0, position: "sticky", top: 80, height: "calc(100vh - 100px)", overflowY: "auto", paddingTop: 20, paddingBottom: 20 }}>
+      {/* Mobile: horizontal scrollable tabs */}
+      {isMobile && (
+        <div style={{
+          display: "flex", gap: 4, overflowX: "auto", padding: "8px 8px",
+          borderBottom: `1px solid ${t.border}`, background: t.glassBg, backdropFilter: t.glassBlur,
+          position: "sticky", top: 52, zIndex: 99, WebkitOverflowScrolling: "touch",
+        }}>
           {SECTIONS.map(s => (
-            <button key={s.id} onClick={() => setActiveSection(s.id)}
-              style={{
-                display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left",
-                padding: "8px 12px", marginBottom: 2, borderRadius: 8, border: "none", cursor: "pointer",
-                background: activeSection === s.id ? `${t.accent}12` : "transparent",
-                color: activeSection === s.id ? t.accent : t.textMuted,
-                fontFamily: "'Outfit'", fontSize: 12, fontWeight: activeSection === s.id ? 700 : 500,
-                transition: "all 0.2s",
-              }}>
-              <span style={{ fontSize: 14 }}>{s.icon}</span>
+            <button key={s.id} onClick={() => setActiveSection(s.id)} style={{
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "6px 10px", borderRadius: 8, border: "none", cursor: "pointer",
+              background: activeSection === s.id ? `${t.accent}18` : "transparent",
+              color: activeSection === s.id ? t.accent : t.textMuted,
+              fontFamily: "'Outfit'", fontSize: 11, fontWeight: activeSection === s.id ? 700 : 500,
+              whiteSpace: "nowrap", transition: "all 0.2s", flexShrink: 0,
+            }}>
+              <span style={{ fontSize: 12 }}>{s.icon}</span>
               {s.label}
             </button>
           ))}
         </div>
+      )}
+
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: isMobile ? "0 12px" : "0 24px", display: "flex", gap: 20 }}>
+        {/* Desktop: Sidebar */}
+        {!isMobile && (
+          <div style={{ width: 200, flexShrink: 0, position: "sticky", top: 80, height: "calc(100vh - 100px)", overflowY: "auto", paddingTop: 20, paddingBottom: 20 }}>
+            {SECTIONS.map(s => (
+              <button key={s.id} onClick={() => setActiveSection(s.id)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left",
+                  padding: "8px 12px", marginBottom: 2, borderRadius: 8, border: "none", cursor: "pointer",
+                  background: activeSection === s.id ? `${t.accent}12` : "transparent",
+                  color: activeSection === s.id ? t.accent : t.textMuted,
+                  fontFamily: "'Outfit'", fontSize: 12, fontWeight: activeSection === s.id ? 700 : 500,
+                  transition: "all 0.2s",
+                }}>
+                <span style={{ fontSize: 14 }}>{s.icon}</span>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Content */}
-        <div style={{ flex: 1, paddingTop: 20, paddingBottom: 60, animation: "fadeUp 0.4s" }} key={activeSection}>
+        <div style={{ flex: 1, paddingTop: 20, paddingBottom: 80, animation: "fadeUp 0.4s" }} key={activeSection}>
           {renderSection()}
         </div>
       </div>

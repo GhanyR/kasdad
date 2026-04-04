@@ -226,27 +226,45 @@ function SecTransform({t}){return(<><H2 t={t} ic="⚙️">Transformasi, Selectio
 
 function SecReduction({t}){return(<><H2 t={t} ic="📦">Data Reduction & Balancing</H2><P t={t}>Representasi data lebih kecil tapi analisis tetap sama/mirip.</P><C t={t}><H3 t={t} c={t.g} ic="🗜️">Strategi Reduction</H3><G cols={2} gap={10}>{[{nm:"Data Cube Aggregation",ic:"🧊",desc:"Harian→bulanan→tahunan",why:"Kurangi baris, pertahankan pola.",c:t.g},{nm:"Dimensionality Reduction",ic:"📐",desc:"PCA, Feature Selection",why:"Terlalu banyak fitur → curse of dimensionality.",c:t.b},{nm:"Numerosity Reduction",ic:"🔢",desc:"Sampling, clustering, histogram",why:"Banyak baris tapi pola sudah jelas.",c:t.y},{nm:"Data Compression",ic:"📦",desc:"Lossless (string) vs Lossy (audio)",why:"Storage/bandwidth terbatas.",c:t.p}].map((s,i)=><div key={i} style={{padding:14,borderRadius:14,background:`${s.c}06`,border:`1px solid ${s.c}18`}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><span style={{fontSize:18}}>{s.ic}</span><div style={{fontSize:13,fontWeight:700,color:s.c}}>{s.nm}</div></div><div style={{fontSize:12,color:t.tx2,marginBottom:4}}>{s.desc}</div><div style={{fontSize:10.5,color:t.tx3,fontStyle:"italic"}}>💡 {s.why}</div></div>)}</G></C><Sp/><C t={t}><H3 t={t} c={t.r} ic="⚖️">Data Balancing</H3><P t={t}>Imbalanced → model bias ke mayoritas. Ex: fraud (99.5% non-fraud, 0.5% fraud).</P><Tip t={t} type="why"><b>Kenapa masalah?</b> Model malas — prediksi mayoritas saja sudah 99.5% akurat. Tapi gagal deteksi fraud yang justru paling penting!</Tip><G cols={2} gap={12}><div style={{padding:18,borderRadius:14,background:`${t.b}06`,border:`1px solid ${t.b}18`,textAlign:"center"}}><div style={{fontSize:15,fontWeight:700,color:t.b,fontFamily:"'Instrument Serif'",marginBottom:6}}>Undersampling</div><div style={{fontSize:12,color:t.tx2}}>Kurangi sampel <b>mayoritas</b>.</div><div style={{fontSize:10.5,color:t.tx3,marginTop:8}}>⚠ Risiko: kehilangan informasi</div></div><div style={{padding:18,borderRadius:14,background:`${t.o}06`,border:`1px solid ${t.o}18`,textAlign:"center"}}><div style={{fontSize:15,fontWeight:700,color:t.o,fontFamily:"'Instrument Serif'",marginBottom:6}}>Oversampling</div><div style={{fontSize:12,color:t.tx2}}>Perbanyak sampel <b>minoritas</b>.</div><div style={{fontSize:10.5,color:t.tx3,marginTop:8}}>⚠ Risiko: overfitting (duplikat)</div></div></G></C><Sp/><C t={t} style={{borderTop:`3px solid ${t.g}`}}><H3 t={t} c={t.g} ic="📋">Ringkasan Data Preparation</H3><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>{[{s:"Cleaning",d:"Missing, noisy, inconsistent",c:t.g},{s:"Integration",d:"Gabungkan, resolve conflict",c:t.b},{s:"Transformation",d:"Smoothing, normalisasi",c:t.y},{s:"Selection",d:"Pilih kolom & baris",c:t.p},{s:"Reduction",d:"Kurangi dimensi/ukuran",c:t.o},{s:"Discretization",d:"Kontinu → kategori",c:t.r},{s:"Balancing",d:"Seimbangkan kelas",c:t.b}].map((d,i)=><div key={i} style={{padding:12,borderRadius:12,background:`${d.c}06`,border:`1px solid ${d.c}18`,textAlign:"center"}}><div style={{fontSize:12,fontWeight:700,color:d.c}}>{d.s}</div><div style={{fontSize:10,color:t.tx3,marginTop:3}}>{d.d}</div></div>)}</div></C></>);}
 
+function useIsMobile(){const[m,s]=useState(false);useEffect(()=>{const c=()=>s(window.innerWidth<=640);c();window.addEventListener("resize",c);return()=>window.removeEventListener("resize",c)},[]);return m;}
+
 export default function App(){
   const [mode,setMode]=useState("light");
   const [sec,setSec]=useState("overview");
   const t=T[mode];const ref=useRef();
+  const isMobile=useIsMobile();
   useEffect(()=>{ref.current&&(ref.current.scrollTop=0)},[sec]);
   const R={overview:SecOverview,collection:SecCollection,eda:SecEDA,stats:SecStats,viz:SecViz,dirty:SecDirty,cleaning:SecCleaning,integration:SecIntegration,transform:SecTransform,reduction:SecReduction};
   const Sec=R[sec]||SecOverview;
+
+  // Register tabs for swipe navigation
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(NAV.map(n=>n.id),sec,setSec);}catch{}
+
   return(
     <div style={{minHeight:"100vh",background:t.bg,color:t.tx,fontFamily:"'Geist',sans-serif",display:"flex",flexDirection:"column",transition:"background .3s,color .3s"}}>
       <link href={FONTS} rel="stylesheet"/>
       <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:${t.brd};border-radius:3px}::-webkit-scrollbar-track{background:transparent}@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
-      <div style={{padding:"12px 24px",borderBottom:`1px solid ${t.brd}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:`${t.card}ee`,backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:100}}>
-        <div style={{display:"flex",alignItems:"center",gap:12}}><span style={{fontSize:26}}>📚</span><div><div style={{fontFamily:"'Instrument Serif'",fontSize:20,color:t.tx}}>Materi 4</div><div style={{fontSize:9.5,color:t.tx3,fontFamily:"'Geist Mono'",letterSpacing:1.5}}>DATA COLLECTION · EDA · STATISTICS · PREPARATION</div></div></div>
+      <div style={{padding:isMobile?"10px 12px":"12px 24px",borderBottom:`1px solid ${t.brd}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:`${t.card}ee`,backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:100}}>
+        <div style={{display:"flex",alignItems:"center",gap:isMobile?8:12}}><span style={{fontSize:isMobile?20:26}}>📚</span><div><div style={{fontFamily:"'Instrument Serif'",fontSize:isMobile?16:20,color:t.tx}}>Materi 4</div>{!isMobile&&<div style={{fontSize:9.5,color:t.tx3,fontFamily:"'Geist Mono'",letterSpacing:1.5}}>DATA COLLECTION · EDA · STATISTICS · PREPARATION</div>}</div></div>
         <button onClick={()=>setMode(m=>m==="dark"?"light":"dark")} style={{background:t.card2,border:`1px solid ${t.brd}`,borderRadius:20,padding:"5px 14px",cursor:"pointer",color:t.tx,fontSize:12,fontFamily:"'Geist'",display:"flex",alignItems:"center",gap:6}}>{mode==="dark"?"☀️ Light":"🌙 Dark"}</button>
       </div>
-      <div style={{display:"flex",flex:1,minHeight:0}}>
-        <div style={{width:195,minWidth:195,borderRight:`1px solid ${t.brd}`,padding:"10px 6px",overflowY:"auto",background:`${t.card}60`}}>
-          {NAV.map(n=>{const a=sec===n.id;return<button key={n.id} onClick={()=>setSec(n.id)} style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"9px 12px",borderRadius:10,border:a?`1px solid ${t.g}30`:"1px solid transparent",cursor:"pointer",background:a?`${t.g}10`:"transparent",color:a?t.g:t.tx2,fontSize:12.5,fontWeight:a?600:400,fontFamily:"'Geist'",textAlign:"left",transition:"all .15s",marginBottom:1}}><span style={{fontSize:14}}>{n.ic}</span>{n.lb}</button>})}
+
+      {/* Mobile: horizontal scrollable tabs at top */}
+      {isMobile && (
+        <div style={{display:"flex",gap:4,overflowX:"auto",padding:"8px 8px",borderBottom:`1px solid ${t.brd}`,background:`${t.card}60`,position:"sticky",top:52,zIndex:99,WebkitOverflowScrolling:"touch"}}>
+          {NAV.map(n=>{const a=sec===n.id;return<button key={n.id} onClick={()=>setSec(n.id)} style={{display:"flex",alignItems:"center",gap:4,padding:"6px 12px",borderRadius:8,border:a?`1px solid ${t.g}30`:"1px solid transparent",cursor:"pointer",background:a?`${t.g}10`:"transparent",color:a?t.g:t.tx2,fontSize:11,fontWeight:a?700:500,fontFamily:"'Geist'",whiteSpace:"nowrap",transition:"all .15s",flexShrink:0}}><span style={{fontSize:12}}>{n.ic}</span>{n.lb}</button>})}
         </div>
-        <div ref={ref} style={{flex:1,padding:"28px 36px",overflowY:"auto"}}>
-          <div style={{maxWidth:900,animation:"fadeIn .3s ease"}}><Sec t={t}/><div style={{height:60}}/></div>
+      )}
+
+      <div style={{display:"flex",flex:1,minHeight:0}}>
+        {/* Desktop: sidebar */}
+        {!isMobile && (
+          <div style={{width:195,minWidth:195,borderRight:`1px solid ${t.brd}`,padding:"10px 6px",overflowY:"auto",background:`${t.card}60`}}>
+            {NAV.map(n=>{const a=sec===n.id;return<button key={n.id} onClick={()=>setSec(n.id)} style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"9px 12px",borderRadius:10,border:a?`1px solid ${t.g}30`:"1px solid transparent",cursor:"pointer",background:a?`${t.g}10`:"transparent",color:a?t.g:t.tx2,fontSize:12.5,fontWeight:a?600:400,fontFamily:"'Geist'",textAlign:"left",transition:"all .15s",marginBottom:1}}><span style={{fontSize:14}}>{n.ic}</span>{n.lb}</button>})}
+          </div>
+        )}
+        <div ref={ref} style={{flex:1,padding:isMobile?"16px 12px":"28px 36px",overflowY:"auto"}}>
+          <div style={{maxWidth:900,animation:"fadeIn .3s ease"}}><Sec t={t}/><div style={{height:80}}/></div>
         </div>
       </div>
     </div>
