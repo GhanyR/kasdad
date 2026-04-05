@@ -489,6 +489,8 @@ function SectionClassification({ t, isMobile }) {
 //  SECTION: REGRESSION
 // ══════════════════════════════════════════
 function SectionRegression({ t, isMobile }) {
+  const [showCalc, setShowCalc] = useState(false);
+  const query = { area: 125, bed: 3, bath: 4, dist: 15 };
   const data = [
     { id: 1, area: 100, bed: 3, bath: 2, dist: 5, price: 1500, edist: 27.00 },
     { id: 2, area: 120, bed: 4, bath: 3, dist: 10, price: 1700, edist: 7.21 },
@@ -562,6 +564,42 @@ function SectionRegression({ t, isMobile }) {
                 })}
               </tbody>
             </table>
+            <button
+              onClick={() => setShowCalc(!showCalc)}
+              style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", background: `${t.accent}15`, color: t.accent, fontSize: 11, fontWeight: 700, marginTop: 12 }}
+            >
+              {showCalc ? "📐 Tutup Hitungan" : "📐 Lihat Hitungan"}
+            </button>
+            {showCalc && (
+              <div style={{ marginTop: 10, padding: 14, borderRadius: 12, background: t.codeBg, border: `1px solid ${t.border}`, overflowX: "auto" }}>
+                <div style={{ fontFamily: "'Space Grotesk'", fontSize: 10, fontWeight: 700, color: t.accent, letterSpacing: 1, marginBottom: 10 }}>DETAIL PERHITUNGAN EUCLIDEAN DISTANCE</div>
+                <div style={{ fontFamily: "'Nunito'", fontSize: 11, color: t.textDim, marginBottom: 10 }}>
+                  Query: Luas={query.area}, Kamar={query.bed}, Bath={query.bath}, Jarak={query.dist}
+                </div>
+                {sorted.map((d) => {
+                  const dArea = query.area - d.area;
+                  const dBed = query.bed - d.bed;
+                  const dBath = query.bath - d.bath;
+                  const dDist = query.dist - d.dist;
+                  const sumSq = dArea * dArea + dBed * dBed + dBath * dBath + dDist * dDist;
+                  return (
+                    <div key={d.id} style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: t.text, lineHeight: 1.9, marginBottom: 6, paddingBottom: 6, borderBottom: `1px solid ${t.borderSoft}` }}>
+                      <span style={{ color: t.accent, fontWeight: 700 }}>d(query, ID{d.id})</span>{" "}
+                      = √(({query.area}-{d.area})² + ({query.bed}-{d.bed})² + ({query.bath}-{d.bath})² + ({query.dist}-{d.dist})²)
+                      <br />
+                      <span style={{ color: t.textDim }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                      = √(({dArea})² + ({dBed})² + ({dBath})² + ({dDist})²)
+                      <br />
+                      <span style={{ color: t.textDim }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                      = √({dArea * dArea} + {dBed * dBed} + {dBath * dBath} + {dDist * dDist})
+                      <br />
+                      <span style={{ color: t.textDim }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                      = √({sumSq}) = <span style={{ color: t.accent, fontWeight: 700 }}>{Math.sqrt(sumSq).toFixed(2)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
