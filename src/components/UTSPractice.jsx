@@ -608,6 +608,18 @@ function RenderTextWithTables({ text, fg, dark }) {
 function QuestionCard({ q, dark, index, isMobile }) {
   const [selected, setSelected] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [matchAnswers, setMatchAnswers] = useState(() => {
+    // Shuffle the right-side options for matching questions
+    if (q.pairs) {
+      const rights = q.pairs.map(p => p.right);
+      for (let i = rights.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [rights[i], rights[j]] = [rights[j], rights[i]];
+      }
+      return { assignments: {}, activeLeft: null, options: rights };
+    }
+    return { assignments: {}, activeLeft: null, options: [] };
+  });
   const topicColor = TOPIC_COLORS[q.topic] || "#94a3b8";
   
   const bg = dark ? "#1e293b" : "#ffffff";
@@ -675,16 +687,91 @@ function QuestionCard({ q, dark, index, isMobile }) {
         </div>
       )}
 
-      {/* Matching pairs display */}
+      {/* Interactive Matching */}
       {q.pairs && (
         <div style={{ marginBottom:16 }}>
-          {q.pairs.map((p, i) => (
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, fontSize:13 }}>
-              <span style={{ flex:1, padding:"6px 10px", borderRadius:8, background:dark?"#0f172a":"#f8fafc", color:fg, border:`1px solid ${border}` }}>{p.left}</span>
-              <span style={{ color:topicColor, fontWeight:700 }}>→</span>
-              <span style={{ padding:"4px 10px", borderRadius:8, background:`${topicColor}22`, color:topicColor, fontWeight:600, fontSize:12 }}>{p.right}</span>
+          {/* Left side items - click to select */}
+          {q.pairs.map((p, i) => {
+            const assigned = matchAnswers.assignments[i];
+            const isActive = matchAnswers.activeLeft === i;
+            const isCorrect = showAnswer && assigned === p.right;
+            const isWrong = showAnswer && assigned && assigned !== p.right;
+            return (
+              <div key={i} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, fontSize:13 }}>
+                <button
+                  onClick={() => {
+                    if (showAnswer) return;
+                    setMatchAnswers(prev => ({ ...prev, activeLeft: prev.activeLeft === i ? null : i }));
+                  }}
+                  style={{
+                    flex:1, padding:"8px 12px", borderRadius:8, textAlign:"left", cursor: showAnswer ? "default" : "pointer",
+                    background: isActive ? `${topicColor}15` : dark ? "#0f172a" : "#f8fafc",
+                    color: fg, border: `2px solid ${isCorrect ? "#34d399" : isWrong ? "#f87171" : isActive ? topicColor : border}`,
+                    fontFamily:"inherit", fontSize:13, fontWeight: isActive ? 600 : 400,
+                    transition:"all 0.2s",
+                  }}>
+                  {p.left}
+                </button>
+                <span style={{ color: assigned ? (isCorrect ? "#34d399" : isWrong ? "#f87171" : topicColor) : fgSub, fontWeight:700, fontSize:14 }}>→</span>
+                {assigned ? (
+                  <button onClick={() => {
+                    if (showAnswer) return;
+                    setMatchAnswers(prev => {
+                      const next = { ...prev, assignments: { ...prev.assignments } };
+                      delete next.assignments[i];
+                      next.options = [...prev.options, assigned].sort();
+                      return next;
+                    });
+                  }} style={{
+                    padding:"5px 12px", borderRadius:8, cursor: showAnswer ? "default" : "pointer",
+                    background: isCorrect ? "#34d39922" : isWrong ? "#f8717122" : `${topicColor}22`,
+                    color: isCorrect ? "#34d399" : isWrong ? "#f87171" : topicColor,
+                    fontWeight:600, fontSize:12, border: `1px solid ${isCorrect ? "#34d39950" : isWrong ? "#f8717150" : topicColor+"44"}`,
+                    fontFamily:"inherit", transition:"all 0.2s",
+                  }}>
+                    {assigned} {isCorrect && "✓"} {isWrong && "✗"}
+                  </button>
+                ) : (
+                  <span style={{ padding:"5px 12px", borderRadius:8, border:`1px dashed ${isActive ? topicColor : border}`, color:fgSub, fontSize:11 }}>
+                    {isActive ? "← pilih di bawah" : "?"}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+          {/* Available options to pick from */}
+          {!showAnswer && matchAnswers.options.length > 0 && (
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10, padding:"10px 12px", borderRadius:10, background:dark?"#0f172a":"#f8fafc", border:`1px solid ${border}` }}>
+              <span style={{ fontSize:10, color:fgSub, fontWeight:600, width:"100%", marginBottom:4 }}>Pilih jawaban:</span>
+              {matchAnswers.options.map((opt, oi) => (
+                <button key={oi} onClick={() => {
+                  if (matchAnswers.activeLeft === null) return;
+                  setMatchAnswers(prev => {
+                    const next = {
+                      ...prev,
+                      assignments: { ...prev.assignments, [prev.activeLeft]: opt },
+                      options: prev.options.filter((_, idx) => idx !== oi),
+                      activeLeft: null,
+                    };
+                    return next;
+                  });
+                }} style={{
+                  padding:"5px 14px", borderRadius:8, cursor: matchAnswers.activeLeft !== null ? "pointer" : "not-allowed",
+                  background: matchAnswers.activeLeft !== null ? `${topicColor}15` : dark ? "#1e293b" : "#e2e8f0",
+                  color: matchAnswers.activeLeft !== null ? topicColor : fgSub,
+                  fontWeight:600, fontSize:12, border:`1px solid ${matchAnswers.activeLeft !== null ? topicColor+"44" : border}`,
+                  fontFamily:"inherit", transition:"all 0.2s", opacity: matchAnswers.activeLeft !== null ? 1 : 0.5,
+                }}>
+                  {opt}
+                </button>
+              ))}
             </div>
-          ))}
+          )}
+          {showAnswer && q.pairs.some((p, i) => matchAnswers.assignments[i] !== p.right) && (
+            <div style={{ marginTop:8, fontSize:11, color:"#f87171", fontWeight:600 }}>
+              Jawaban benar: {q.pairs.map(p => p.right).join(", ")}
+            </div>
+          )}
         </div>
       )}
 
