@@ -5,6 +5,17 @@ import { useState, useEffect, useRef } from "react";
 // Visualisasi Interaktif  |  KASDD Genap 2025/2026
 // ═══════════════════════════════════════════════════════════
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const T = {
   dark: {
     bg: "#0c0f1a", bg2: "#111527", bg3: "#181d33",
@@ -326,7 +337,7 @@ const InfoGainDemo = ({ t }) => {
 };
 
 // ═══ CHI-SQUARE VISUAL ═══
-const ChiSquareDemo = ({ t }) => {
+const ChiSquareDemo = ({ t, isMobile }) => {
   const data = [
     { cat: "Female Survived", O: 307, E: 158.33, chi: 139.60 },
     { cat: "Female Not Survived", O: 156, E: 304.67, chi: 72.55 },
@@ -343,7 +354,7 @@ const ChiSquareDemo = ({ t }) => {
       <div style={{ marginBottom: 12 }}>
         <Formula t={t}>χ² = Σ (O - E)² / E</Formula>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 6 }}>
         {data.map((d, i) => {
           const pct = (d.chi / totalChi) * 100;
           const isFemale = d.cat.includes("Female");
@@ -757,6 +768,7 @@ const CurseDimDemo = ({ t }) => {
 export default function FeatureEngineeringViz() {
   const [dark, setDark] = useState(false);
   const [section, setSection] = useState("overview");
+  const isMobile = useIsMobile();
   const t = dark ? T.dark : T.light;
 
   const sections = [
@@ -777,6 +789,7 @@ export default function FeatureEngineeringViz() {
       minHeight: "100vh", background: t.bg, color: t.text,
       fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
       transition: "background 0.5s, color 0.5s",
+      overflowX: "hidden",
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=IBM+Plex+Mono:wght@400;500;600;700&family=Playfair+Display:wght@700;800;900&display=swap');
@@ -877,7 +890,7 @@ export default function FeatureEngineeringViz() {
               </VisualCard>
 
               <VisualCard title="Peta Materi" icon="🗺️" t={t} color={t.accent} delay={0.1}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
                   {[
                     { icon: "🔧", title: "Feature Engineering", desc: "Buat & transform fitur jadi lebih berguna", color: t.accent, items: ["Aggregation", "Encoding", "Scaling", "BoW"] },
                     { icon: "✂️", title: "Feature Selection", desc: "Pilih fitur terbaik, buang yang ga penting", color: t.warm, items: ["Filter", "Wrapper", "Embedded"] },
@@ -1237,7 +1250,7 @@ export default function FeatureEngineeringViz() {
               </VisualCard>
 
               <VisualCard title="Min-Max vs Simple Feature Scaling" icon="🔬" t={t} color={t.purple} delay={0.1}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: 14, borderRadius: 12, background: t.glow, border: `1px solid ${t.accent}20` }}>
                     <div style={{ fontSize: 13, fontWeight: 800, color: t.accent, marginBottom: 8 }}>Min-Max Scaling</div>
                     <Formula t={t}>x' = (x - min) / (max - min)</Formula>
@@ -1275,7 +1288,7 @@ export default function FeatureEngineeringViz() {
               </VisualCard>
               
               <VisualCard title="BoW: Kelebihan & Kekurangan" icon="⚖️" t={t} color={t.purple}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
                   <div style={{ padding: 12, borderRadius: 10, background: t.accent + "08", border: `1px solid ${t.accent}20` }}>
                     <div style={{ fontSize: 12, fontWeight: 800, color: t.accent, marginBottom: 6 }}>✓ Kelebihan</div>
                     {["Simple & mudah diimplementasi", "Cocok untuk klasifikasi teks dasar", "Tidak perlu deep learning"].map(p => (
@@ -1409,7 +1422,7 @@ export default function FeatureEngineeringViz() {
                   Cek 2 hal: (1) Korelasi <strong style={{ color: t.accent }}>fitur↔target</strong> — yang rendah bisa dibuang.
                   (2) Korelasi <strong style={{ color: t.warm }}>fitur↔fitur</strong> — yang tinggi, ambil salah satu saja.
                 </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 3 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: 3 }}>
                   {["", "A", "B", "C",
                     "A", "1.00", "0.92", "0.12",
                     "B", "0.92", "1.00", "0.08",
@@ -1445,7 +1458,7 @@ export default function FeatureEngineeringViz() {
                   Untuk fitur <strong style={{ color: t.accent }}>kategorikal</strong>. Bandingkan nilai <strong style={{ color: t.warm }}>observed</strong> vs <strong style={{ color: t.blue }}>expected</strong>.
                   Semakin besar χ² → semakin penting fitur tersebut.
                 </p>
-                <ChiSquareDemo t={t}/>
+                <ChiSquareDemo t={t} isMobile={isMobile}/>
               </VisualCard>
 
               <VisualCard title="Information Gain" icon="📈" t={t} color={t.accent}>

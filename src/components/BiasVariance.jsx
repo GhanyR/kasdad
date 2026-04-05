@@ -2,6 +2,17 @@ import { useState, useEffect, useRef } from "react";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');`;
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 // ══════════════════════════════════════════════════
 // THEME
 // ══════════════════════════════════════════════════
@@ -372,7 +383,7 @@ function SectionTitle({ t, icon, title, sub }) {
 // SECTION RENDERERS
 // ══════════════════════════════════════════════════
 
-function OverviewSection({ t }) {
+function OverviewSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="◉" title="Apa itu Bias-Variance Tradeoff?"
@@ -390,7 +401,7 @@ function OverviewSection({ t }) {
         </div>
       </Card>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 16 }}>
         <Card t={t} style={{ borderLeft: `3px solid ${t.blue}` }}>
           <div style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: 14, color: t.blue, marginBottom: 6 }}>
             Training Error
@@ -500,13 +511,13 @@ function FittingSection({ t }) {
   );
 }
 
-function BiasVarianceSection({ t }) {
+function BiasVarianceSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="◎" title="Bias & Variance"
         sub="Dua sumber error utama yang saling berlawanan" />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         <Card t={t} style={{ borderTop: `3px solid ${t.blue}` }}>
           <div style={{ fontFamily: "'Playfair Display'", fontSize: 22, fontWeight: 600, color: t.blue, marginBottom: 12 }}>
             Bias
@@ -563,7 +574,7 @@ function BiasVarianceSection({ t }) {
         <div style={{ fontFamily: "'JetBrains Mono'", fontSize: 10, letterSpacing: 2, color: t.accent, marginBottom: 16 }}>
           ANALOGI: GAME OF DARTS 🎯
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: 12 }}>
           <DartboardSVG t={t} bias="low" variance="low" label="Low Bias, Low Var" />
           <DartboardSVG t={t} bias="low" variance="high" label="Low Bias, High Var" />
           <DartboardSVG t={t} bias="high" variance="low" label="High Bias, Low Var" />
@@ -577,13 +588,13 @@ function BiasVarianceSection({ t }) {
   );
 }
 
-function OverUnderSection({ t }) {
+function OverUnderSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="⚖" title="Overfitting vs Underfitting"
         sub="Dua kondisi ekstrem yang harus dihindari" />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 16 }}>
         {[
           {
             type: "underfit", title: "Underfitting",
@@ -629,7 +640,7 @@ function OverUnderSection({ t }) {
   );
 }
 
-function FormulaSection({ t }) {
+function FormulaSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="∑" title="Error Decomposition"
@@ -639,7 +650,7 @@ function FormulaSection({ t }) {
         <div style={{ fontFamily: "'JetBrains Mono'", fontSize: 10, letterSpacing: 2, color: t.accent, marginBottom: 16 }}>
           SETUP DASAR
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 20 }}>
           <div style={{ padding: 14, borderRadius: 10, background: t.bgAccent }}>
             <div style={{ fontFamily: "'JetBrains Mono'", fontSize: 12, color: t.blue, marginBottom: 6 }}>Data Model</div>
             <div style={{ fontFamily: "'JetBrains Mono'", fontSize: 14, color: t.text }}>y = f(x) + ε</div>
@@ -719,7 +730,7 @@ function FormulaSection({ t }) {
         }}>
           <span style={{ color: t.red }}>MSE</span> = <span style={{ color: t.blue }}>Bias²</span> + <span style={{ color: t.warm }}>Variance</span> + <span style={{ color: t.textDim }}>σ²</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginTop: 8 }}>
           <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: t.blueSoft }}>
             <div style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: 13, color: t.blue }}>Bias²</div>
             <div style={{ fontFamily: "'DM Sans'", fontSize: 11, color: t.textMuted, marginTop: 4 }}>Reducible error — bisa dikurangi dengan model lebih kompleks</div>
@@ -738,7 +749,7 @@ function FormulaSection({ t }) {
   );
 }
 
-function TradeoffSection({ t }) {
+function TradeoffSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="📈" title="The Tradeoff Graph"
@@ -753,7 +764,7 @@ function TradeoffSection({ t }) {
         </div>
       </Card>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginTop: 16 }}>
         <Card t={t} style={{ borderLeft: `3px solid ${t.red}` }}>
           <div style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: 14, color: t.red, marginBottom: 8 }}>
             🔴 Overfitting Detected!
@@ -775,7 +786,7 @@ function TradeoffSection({ t }) {
   );
 }
 
-function SolutionsSection({ t }) {
+function SolutionsSection({ t, isMobile }) {
   const [activeSol, setActiveSol] = useState("reg");
 
   return (
@@ -814,7 +825,7 @@ function SolutionsSection({ t }) {
             CONTOH: DECISION TREE REGULARIZATION
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
             <div style={{ padding: 14, borderRadius: 10, background: t.bgAccent }}>
               <div style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: 13, color: t.text, marginBottom: 6 }}>
                 Strategi 1: Early Stopping
@@ -923,7 +934,7 @@ function SolutionsSection({ t }) {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginTop: 12 }}>
             <div style={{ padding: 14, borderRadius: 10, background: t.bgAccent }}>
               <div style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: 13, color: t.text, marginBottom: 6 }}>
                 AdaBoost
@@ -973,7 +984,7 @@ function SolutionsSection({ t }) {
             <text x={385} y={62} fill={t.red} fontSize={9} fontFamily="JetBrains Mono">non-realizable</text>
           </svg>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 8, marginTop: 12 }}>
             {[
               { label: "Realizable", color: t.green, desc: "f(x) bisa dinyatakan oleh model → accuracy bisa → 100%" },
               { label: "Redundant", color: t.blue, desc: "Banyak fitur noise → bisa menyesatkan, accuracy terbatas" },
@@ -1062,16 +1073,17 @@ export default function BiasVarianceApp() {
   const [activeSection, setActiveSection] = useState("overview");
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(sections.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const t = isDark ? themes.dark : themes.light;
+  const isMobile = useIsMobile();
 
   const renderSection = () => {
     switch (activeSection) {
-      case "overview": return <OverviewSection t={t} />;
+      case "overview": return <OverviewSection t={t} isMobile={isMobile} />;
       case "fitting": return <FittingSection t={t} />;
-      case "bias": return <BiasVarianceSection t={t} />;
-      case "overunder": return <OverUnderSection t={t} />;
-      case "formula": return <FormulaSection t={t} />;
-      case "tradeoff": return <TradeoffSection t={t} />;
-      case "solutions": return <SolutionsSection t={t} />;
+      case "bias": return <BiasVarianceSection t={t} isMobile={isMobile} />;
+      case "overunder": return <OverUnderSection t={t} isMobile={isMobile} />;
+      case "formula": return <FormulaSection t={t} isMobile={isMobile} />;
+      case "tradeoff": return <TradeoffSection t={t} isMobile={isMobile} />;
+      case "solutions": return <SolutionsSection t={t} isMobile={isMobile} />;
       case "table": return <ImpactTableSection t={t} />;
       default: return null;
     }
@@ -1084,6 +1096,7 @@ export default function BiasVarianceApp() {
       minHeight: "100vh", background: t.bg, color: t.text,
       fontFamily: "'DM Sans', sans-serif",
       transition: "background 0.5s ease, color 0.5s ease",
+      overflowX: "hidden",
     }}>
       <style>{FONTS}</style>
       <style>{`

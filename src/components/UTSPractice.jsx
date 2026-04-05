@@ -5,6 +5,17 @@ import { useState, useEffect, useCallback } from "react";
 // Genap 2025/2026 — Prediksi Soal + Pembahasan
 // ═══════════════════════════════════════════════════
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const QUESTIONS = [
   // ══════════ BAGIAN 1: AI FUNDAMENTALS & PEAS ══════════
   {
@@ -441,11 +452,11 @@ const TOPIC_COLORS = {
 
 // ═══════════════ VISUAL COMPONENTS ═══════════════
 
-function PEASDiagram({ dark }) {
+function PEASDiagram({ dark, isMobile }) {
   const bg = dark ? "#1e293b" : "#f1f5f9";
   const fg = dark ? "#e2e8f0" : "#1e293b";
   return (
-    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginTop:12 }}>
+    <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "1fr 1fr", gap:12, marginTop:12 }}>
       {[
         { icon: "🎯", label: "Performance", desc: "Ukuran keberhasilan", ex: "Kebersihan lantai" },
         { icon: "🌍", label: "Environment", desc: "Lingkungan operasi", ex: "Lantai kantor + debu" },
@@ -481,7 +492,7 @@ function SkewnessDiagram({ dark }) {
   );
 }
 
-function ConfusionMatrixDiagram({ dark }) {
+function ConfusionMatrixDiagram({ dark, isMobile }) {
   const cells = [
     { r: "Actual Neg", c: "Pred Neg", val: "TN", color: "#34d399", desc: "Benar negatif" },
     { r: "Actual Neg", c: "Pred Pos", val: "FP", color: "#f87171", desc: "False alarm!" },
@@ -489,7 +500,7 @@ function ConfusionMatrixDiagram({ dark }) {
     { r: "Actual Pos", c: "Pred Pos", val: "TP", color: "#60a5fa", desc: "Benar positif" },
   ];
   return (
-    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, marginTop:12, maxWidth:280 }}>
+    <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "1fr 1fr", gap:6, marginTop:12, maxWidth:280 }}>
       {cells.map((c,i) => (
         <div key={i} style={{ padding:10, borderRadius:8, background:`${c.color}22`, border:`2px solid ${c.color}44`, textAlign:"center" }}>
           <div style={{ fontSize:18, fontWeight:800, color:c.color }}>{c.val}</div>
@@ -510,18 +521,18 @@ function FormulaCard({ formulas, dark }) {
   );
 }
 
-function getVisualComponent(visual, dark) {
+function getVisualComponent(visual, dark, isMobile) {
   switch(visual) {
-    case "peas": return <PEASDiagram dark={dark}/>;
+    case "peas": return <PEASDiagram dark={dark} isMobile={isMobile}/>;
     case "skewness": return <SkewnessDiagram dark={dark}/>;
-    case "confusion_matrix": return <ConfusionMatrixDiagram dark={dark}/>;
+    case "confusion_matrix": return <ConfusionMatrixDiagram dark={dark} isMobile={isMobile}/>;
     default: return null;
   }
 }
 
 // ═══════════════ QUESTION CARD ═══════════════
 
-function QuestionCard({ q, dark, index }) {
+function QuestionCard({ q, dark, index, isMobile }) {
   const [selected, setSelected] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const topicColor = TOPIC_COLORS[q.topic] || "#94a3b8";
@@ -628,7 +639,7 @@ function QuestionCard({ q, dark, index }) {
             {q.explanation.text}
           </div>
 
-          {getVisualComponent(q.explanation.visual, dark)}
+          {getVisualComponent(q.explanation.visual, dark, isMobile)}
 
           {q.explanation.visual === "confusion_matrix" && (
             <FormulaCard dark={dark} formulas={[
@@ -647,7 +658,7 @@ function QuestionCard({ q, dark, index }) {
 
 // ═══════════════ FORMULA SHEET ═══════════════
 
-function FormulaSheet({ dark }) {
+function FormulaSheet({ dark, isMobile }) {
   const bg = dark ? "#1e293b" : "#ffffff";
   const border = dark ? "#334155" : "#e2e8f0";
   const fg = dark ? "#e2e8f0" : "#1e293b";
@@ -735,7 +746,7 @@ function FormulaSheet({ dark }) {
   ];
 
   return (
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(260px, 1fr))", gap:14 }}>
+    <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))", gap:14 }}>
       {sections.map((s, i) => (
         <div key={i} style={{ background:bg, borderRadius:14, padding:"16px 18px", border:`1px solid ${border}`, borderLeft:`4px solid ${s.color}` }}>
           <div style={{ fontWeight:700, color:s.color, fontSize:14, marginBottom:10 }}>{s.title}</div>
@@ -805,6 +816,7 @@ function TopicOverview({ dark }) {
 // ═══════════════ MAIN APP ═══════════════
 
 export default function KASDADExamPractice() {
+  const isMobile = useIsMobile();
   const [dark, setDark] = useState(false);
   const [tab, setTab] = useState("overview");
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["overview","practice","formulas"],tab,setTab);}catch{}
@@ -831,7 +843,7 @@ export default function KASDADExamPractice() {
   const totalPts = QUESTIONS.reduce((a,b) => a + b.points, 0);
 
   return (
-    <div style={{ minHeight:"100vh", background:bg, color:fg, fontFamily:"'Nunito', 'Segoe UI', system-ui, sans-serif", transition:"all 0.4s ease" }}>
+    <div style={{ minHeight:"100vh", background:bg, color:fg, fontFamily:"'Nunito', 'Segoe UI', system-ui, sans-serif", transition:"all 0.4s ease", overflowX:"hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -900,7 +912,7 @@ export default function KASDADExamPractice() {
               </div>
 
               {/* Quick Stats */}
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:12, marginBottom:20 }}>
+              <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "repeat(auto-fit, minmax(150px, 1fr))", gap:12, marginBottom:20 }}>
                 {[
                   { label: "Format", value: "60p PG + 40p Essay", color: "#f59e0b" },
                   { label: "Durasi", value: "150 menit", color: "#60a5fa" },
@@ -959,7 +971,7 @@ export default function KASDADExamPractice() {
 
               {/* Questions */}
               {filteredQ.map((q, i) => (
-                <QuestionCard key={q.id} q={q} dark={dark} index={QUESTIONS.indexOf(q)} />
+                <QuestionCard key={q.id} q={q} dark={dark} index={QUESTIONS.indexOf(q)} isMobile={isMobile} />
               ))}
             </div>
           )}
@@ -970,7 +982,7 @@ export default function KASDADExamPractice() {
               <div style={{ marginBottom:16, color:fgSub, fontSize:13 }}>
                 📝 Semua rumus penting untuk UTS — cetak ini di catatan 8 halaman A4!
               </div>
-              <FormulaSheet dark={dark}/>
+              <FormulaSheet dark={dark} isMobile={isMobile}/>
               
               {/* Model Comparison Table */}
               <div style={{ background:cardBg, borderRadius:16, padding:24, border:`1px solid ${border}`, marginTop:20 }}>

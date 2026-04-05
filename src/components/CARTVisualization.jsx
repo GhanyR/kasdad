@@ -1,5 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const SECTIONS = [
   { id: "overview", label: "Overview", icon: "🌳" },
   { id: "learning", label: "Learning Methods", icon: "🧠" },
@@ -75,10 +86,10 @@ function TreeEdge({ x1, y1, x2, y2, label, t, delay = 0 }) {
 }
 
 // ========== SECTION: OVERVIEW ==========
-function OverviewSection({ t }) {
+function OverviewSection({ t, isMobile }) {
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 24 }}>
         <div style={{ background: t.card, borderRadius: 16, padding: 24, border: `1px solid ${t.border}`, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -20, right: -20, fontSize: 80, opacity: 0.06 }}>🌳</div>
           <div style={{ fontSize: 13, color: t.accent, fontWeight: 700, letterSpacing: 1, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>WHAT IS CART?</div>
@@ -133,7 +144,7 @@ function OverviewSection({ t }) {
 }
 
 // ========== SECTION: LEARNING METHODS ==========
-function LearningSection({ t }) {
+function LearningSection({ t, isMobile }) {
   const [active, setActive] = useState(0);
   const methods = [
     { name: "Supervised", icon: "👨‍🏫", color: t.accent, desc: "Belajar dari data yang sudah ada label/jawaban", example: "Classification, Regression", visual: "Input + Label → Model → Prediksi", key: "CART termasuk di sini!" },
@@ -178,7 +189,7 @@ function LearningSection({ t }) {
       </div>
       
       {/* Classification vs Regression */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 16 }}>
         <div style={{ background: t.card, borderRadius: 14, padding: 20, border: `1px solid ${t.accent}25` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
             <div style={{ width: 8, height: 8, borderRadius: 4, background: t.accent }}/>
@@ -209,7 +220,7 @@ function LearningSection({ t }) {
 }
 
 // ========== SECTION: STRUCTURE ==========
-function StructureSection({ t }) {
+function StructureSection({ t, isMobile }) {
   const [highlight, setHighlight] = useState(null);
   const parts = [
     { id: "internal", name: "Internal Node", color: t.accent, icon: "🔵", desc: "Tempat pengujian/pertanyaan terhadap suatu variabel input. Contoh: 'Umur ≤ 12.5?'" },
@@ -240,7 +251,7 @@ function StructureSection({ t }) {
         </svg>
       </div>
       
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 12 }}>
         {parts.map((p, i) => (
           <div key={i}
             onMouseEnter={() => setHighlight(p.id)} onMouseLeave={() => setHighlight(null)}
@@ -256,7 +267,7 @@ function StructureSection({ t }) {
 }
 
 // ========== SECTION: ALGORITHM ==========
-function AlgorithmSection({ t }) {
+function AlgorithmSection({ t, isMobile }) {
   const [step, setStep] = useState(0);
   const steps = [
     { title: "1. Kumpulkan Data di Node", desc: "Di node i, kumpulkan semua data (examples) yang 'sampai' di node tersebut. Di root node, semua data training ada di sini.", visual: "📦", formula: "𝒟ᵢ = {(xₙ, yₙ) ∈ Nᵢ}" },
@@ -296,7 +307,7 @@ function AlgorithmSection({ t }) {
       </div>
       
       {/* Split Types */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
         <div style={{ background: t.card, borderRadius: 14, padding: 20, border: `1px solid ${t.border}` }}>
           <div style={{ fontSize: 12, color: t.blue, fontWeight: 700, letterSpacing: 1, marginBottom: 10 }}>VARIABEL NUMERIK</div>
           <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, marginBottom: 10 }}>
@@ -328,7 +339,7 @@ function AlgorithmSection({ t }) {
 }
 
 // ========== SECTION: COST FUNCTIONS ==========
-function CostSection({ t }) {
+function CostSection({ t, isMobile }) {
   const [tab, setTab] = useState("gini");
   return (
     <div>
@@ -359,7 +370,7 @@ function CostSection({ t }) {
             <div style={{ fontSize: 12, color: t.textMuted }}>dimana p<sub>c</sub> = proporsi data kelas c di node tersebut</div>
           </div>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 12 }}>
             <div style={{ background: `${t.green}08`, borderRadius: 10, padding: 14, border: `1px solid ${t.green}20`, textAlign: "center" }}>
               <div style={{ fontSize: 11, color: t.green, fontWeight: 700, marginBottom: 6 }}>PURE NODE</div>
               <div style={{ display: "flex", gap: 3, justifyContent: "center", marginBottom: 6 }}>
@@ -405,7 +416,7 @@ function CostSection({ t }) {
             <div style={{ fontSize: 12, color: t.textMuted }}>Entropy = 0 artinya node pure, makin besar = makin campur</div>
           </div>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
             <div style={{ background: `${t.green}08`, borderRadius: 10, padding: 14, border: `1px solid ${t.green}20`, textAlign: "center" }}>
               <div style={{ fontSize: 11, color: t.green, fontWeight: 700, marginBottom: 6 }}>PURE: [4, 0]</div>
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.text }}>H = <strong>0</strong></div>
@@ -435,7 +446,7 @@ function CostSection({ t }) {
             <div style={{ fontSize: 12, color: t.textMuted }}>ȳ = rata-rata nilai output di node tersebut</div>
           </div>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
             <div style={{ background: `${t.green}08`, borderRadius: 10, padding: 14, border: `1px solid ${t.green}20`, textAlign: "center" }}>
               <div style={{ fontSize: 11, color: t.green, fontWeight: 700, marginBottom: 6 }}>NILAI MIRIP</div>
               <div style={{ fontSize: 12, color: t.textMuted, marginBottom: 4 }}>Data: [74, 75, 73]</div>
@@ -566,7 +577,7 @@ function ClassificationSection({ t }) {
 }
 
 // ========== SECTION: REGRESSION TREE ==========
-function RegressionSection({ t }) {
+function RegressionSection({ t, isMobile }) {
   const data = [
     { no: 1, vid: "Semua", lab: "Iya", ujian: 74 },
     { no: 2, vid: "Sebagian", lab: "Tidak", ujian: 23 },
@@ -605,7 +616,7 @@ function RegressionSection({ t }) {
         </table>
       </div>
       
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 16 }}>
         <div style={{ background: t.card, borderRadius: 14, padding: 18, border: `1px solid ${t.border}` }}>
           <div style={{ fontSize: 12, color: t.accent4, fontWeight: 700, marginBottom: 8 }}>SPLIT: VIDEO TUTORIAL</div>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted, lineHeight: 2 }}>
@@ -661,7 +672,7 @@ function RegressionSection({ t }) {
 }
 
 // ========== SECTION: HYPERPARAMETERS ==========
-function HyperparamsSection({ t }) {
+function HyperparamsSection({ t, isMobile }) {
   const params = [
     { name: "max_depth", desc: "Kedalaman maksimum tree. Makin dalam = makin detail tapi risiko overfit.", icon: "📏", risk: "Terlalu dalam → overfit", safe: "Mulai dari 3-5" },
     { name: "min_samples_split", desc: "Minimum data di node agar boleh di-split lagi.", icon: "✂️", risk: "Terlalu kecil → overfit", safe: "Default: 2" },
@@ -674,7 +685,7 @@ function HyperparamsSection({ t }) {
     <div>
       <div style={{ background: t.card, borderRadius: 16, padding: 20, border: `1px solid ${t.border}`, marginBottom: 16 }}>
         <div style={{ fontSize: 13, color: t.accent, fontWeight: 700, letterSpacing: 1, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>PARAMETER vs HYPERPARAMETER</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 12 }}>
           <div style={{ background: t.surface, borderRadius: 10, padding: 14 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, marginBottom: 6 }}>Parameter</div>
             <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.6 }}>Dipelajari <strong style={{ color: t.text }}>SELAMA</strong> training. Contoh: struktur tree, split points.</div>
@@ -706,7 +717,7 @@ function HyperparamsSection({ t }) {
 }
 
 // ========== SECTION: PROS & CONS ==========
-function ProsConsSection({ t }) {
+function ProsConsSection({ t, isMobile }) {
   const pros = [
     { text: "Mudah diinterpretasi", detail: "Bisa dibaca seperti if-then-else" },
     { text: "Bisa handle mix data", detail: "Diskret + kontinu sekaligus" },
@@ -725,7 +736,7 @@ function ProsConsSection({ t }) {
   
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         <div>
           <div style={{ fontSize: 14, fontWeight: 700, color: t.green, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 18 }}>✅</span> Kelebihan
@@ -753,7 +764,7 @@ function ProsConsSection({ t }) {
       {/* Issues */}
       <div style={{ background: t.card, borderRadius: 16, padding: 20, border: `1px solid ${t.border}`, marginTop: 16 }}>
         <div style={{ fontSize: 13, color: t.accent4, fontWeight: 700, letterSpacing: 1, marginBottom: 12, fontFamily: "'JetBrains Mono', monospace" }}>ISU PENTING</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
           <div style={{ background: t.surface, borderRadius: 10, padding: 14 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: t.accent4, marginBottom: 4 }}>Missing Values</div>
             <div style={{ fontSize: 12, color: t.textMuted, lineHeight: 1.6 }}>
@@ -778,9 +789,10 @@ export default function CARTVisualization() {
   const [section, setSection] = useState("overview");
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),section,setSection);}catch{}
   const t = dark ? themes.dark : themes.light;
+  const isMobile = useIsMobile();
 
   return (
-    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'DM Sans', sans-serif", transition: "background 0.4s, color 0.4s" }}>
+    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'DM Sans', sans-serif", transition: "background 0.4s, color 0.4s", overflowX: "hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -825,15 +837,15 @@ export default function CARTVisualization() {
       {/* Content */}
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px" }} key={section}>
         <div style={{ animation: "fadeUp 0.4s both" }}>
-          {section === "overview" && <OverviewSection t={t} />}
-          {section === "learning" && <LearningSection t={t} />}
-          {section === "structure" && <StructureSection t={t} />}
-          {section === "algorithm" && <AlgorithmSection t={t} />}
-          {section === "cost" && <CostSection t={t} />}
+          {section === "overview" && <OverviewSection t={t} isMobile={isMobile} />}
+          {section === "learning" && <LearningSection t={t} isMobile={isMobile} />}
+          {section === "structure" && <StructureSection t={t} isMobile={isMobile} />}
+          {section === "algorithm" && <AlgorithmSection t={t} isMobile={isMobile} />}
+          {section === "cost" && <CostSection t={t} isMobile={isMobile} />}
           {section === "classification" && <ClassificationSection t={t} />}
-          {section === "regression" && <RegressionSection t={t} />}
-          {section === "hyperparams" && <HyperparamsSection t={t} />}
-          {section === "proscons" && <ProsConsSection t={t} />}
+          {section === "regression" && <RegressionSection t={t} isMobile={isMobile} />}
+          {section === "hyperparams" && <HyperparamsSection t={t} isMobile={isMobile} />}
+          {section === "proscons" && <ProsConsSection t={t} isMobile={isMobile} />}
         </div>
       </div>
     </div>

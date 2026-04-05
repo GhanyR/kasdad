@@ -4,6 +4,17 @@ import { useState, useEffect } from "react";
 // MATERI 3 — SAINS DATA  (v2 — Full Rebuild)
 // ═══════════════════════════════════════════
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const TH = {
   dark: {
     bg: "#0c111b", bg2: "#111827", card: "rgba(255,255,255,0.035)", cardH: "rgba(255,255,255,0.065)",
@@ -84,7 +95,7 @@ function Trap({ c, children }) {
 }
 
 // ═══════ 1. MOTIVASI ═══════
-function MotivasiSec({ c }) {
+function MotivasiSec({ c, isMobile }) {
   const qs = [
     { q: "Kata kunci apa yang paling sering dicari di Google?", cat: "Descriptive", color: c.cyan },
     { q: "Apa yang sedang trend di TikTok / Instagram?", cat: "Descriptive", color: c.cyan },
@@ -96,7 +107,7 @@ function MotivasiSec({ c }) {
   return (
     <Sec c={c} id="motivasi" icon="💡" title="Motivasi: Kenapa Sains Data?"
       sub="Pertanyaan-pertanyaan ini bisa dijawab dengan sains data + learning agent">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 16 }}>
         {qs.map((q, i) => (
           <Cd key={i} c={c} s={{ padding: 14, display: "flex", alignItems: "flex-start", gap: 10 }}>
             <span style={{ fontSize: 16, flexShrink: 0 }}>❓</span>
@@ -140,7 +151,7 @@ function MotivasiSec({ c }) {
 }
 
 // ═══════ 2. BIG DATA ═══════
-function BigDataSec({ c }) {
+function BigDataSec({ c, isMobile }) {
   const [sel, setSel] = useState(null);
   const vs = [
     { n: "Volume", icon: "📦", color: c.cyan, short: "Seberapa BESAR?", d: "Data terakumulasi sangat besar — terabyte sampai yottabyte",
@@ -159,7 +170,7 @@ function BigDataSec({ c }) {
   return (
     <Sec c={c} id="bigdata" icon="⬡" title="Big Data — 6V"
       sub="Kenapa kita hidup di era 'Big Data'? Karena data sekarang punya 6 karakteristik ini">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 10, marginBottom: 14 }}>
         {vs.map((v, i) => (
           <Cd key={i} c={c} gl onClick={() => setSel(sel === i ? null : i)}
             s={{ padding: 16, borderLeft: `3px solid ${sel === i ? v.color : "transparent"}`, transition: "all .3s",
@@ -177,7 +188,7 @@ function BigDataSec({ c }) {
       </div>
       {sel !== null && (
         <Cd c={c} s={{ borderTop: `3px solid ${vs[sel].color}`, animation: "fadeIn .3s" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
             <div><Tag color={vs[sel].color}>Contoh Nyata</Tag><p style={{ margin: "8px 0 0", fontSize: 12, color: c.text, lineHeight: 1.6 }}>{vs[sel].ex}</p></div>
             <div><Tag color={c.amber}>Kenapa Penting?</Tag><p style={{ margin: "8px 0 0", fontSize: 12, color: c.text, lineHeight: 1.6 }}>{vs[sel].why}</p></div>
           </div>
@@ -221,7 +232,7 @@ function DefinisiSec({ c }) {
 }
 
 // ═══════ 4. ANALYTICS ═══════
-function AnalyticsSec({ c }) {
+function AnalyticsSec({ c, isMobile }) {
   const [sel, setSel] = useState(null);
   const ts = [
     { n: "Descriptive", q: "APA yang terjadi?", icon: "📊", color: c.cyan,
@@ -272,7 +283,7 @@ function AnalyticsSec({ c }) {
               <p style={{ margin: "2px 0 0", fontSize: 13, color: c.text }}>{ts[sel].d}</p>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
             {[{ l: "Contoh", v: ts[sel].ex, tg: ts[sel].color }, { l: "Analogi", v: ts[sel].an, tg: c.blue }, { l: "Tools", v: ts[sel].tool, tg: c.dim }].map((r, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: r.tg + "08" }}>
                 <Tag color={r.tg}>{r.l}</Tag>
@@ -293,7 +304,7 @@ function AnalyticsSec({ c }) {
 }
 
 // ═══════ 5. ECOSYSTEM ═══════
-function EcosystemSec({ c }) {
+function EcosystemSec({ c, isMobile }) {
   const [hov, setHov] = useState(null);
   const ls = [
     { n: "Artificial Intelligence", d: "Bidang PALING LUAS — segala upaya bikin mesin 'cerdas'", color: c.cyan, r: 148 },
@@ -304,7 +315,7 @@ function EcosystemSec({ c }) {
   return (
     <Sec c={c} id="ecosystem" icon="🔭" title="Ekosistem: AI vs Data Science vs Big Data"
       sub="Hubungan dan perbedaan — ini sering keluar di UTS!">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 24, alignItems: "start" }}>
         <Cd c={c} s={{ padding: 20 }}>
           <svg viewBox="0 0 400 360" style={{ width: "100%" }}>
             {ls.map((l, i) => (
@@ -353,7 +364,7 @@ function EcosystemSec({ c }) {
 }
 
 // ═══════ 6. ROLES ═══════
-function RolesSec({ c }) {
+function RolesSec({ c, isMobile }) {
   const [sel, setSel] = useState(0);
   const rs = [
     { n: "Data Engineer", icon: "🔧", color: c.cyan, focus: "INFRASTRUKTUR — biar data bisa diakses",
@@ -383,7 +394,7 @@ function RolesSec({ c }) {
         ))}
       </div>
       <Cd c={c} s={{ borderTop: `3px solid ${rs[sel].color}` }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 1fr", gap: 20 }}>
           <div>
             <Tag color={rs[sel].color}>Fokus</Tag>
             <h4 style={{ margin: "8px 0", color: rs[sel].color, fontSize: 14 }}>{rs[sel].focus}</h4>
@@ -453,7 +464,7 @@ function PipelineSec({ c }) {
 }
 
 // ═══════ 8. CRISP-DM ═══════
-function CrispSec({ c }) {
+function CrispSec({ c, isMobile }) {
   const [sel, setSel] = useState(null);
   const ps = [
     { n: "Business Understanding", num: 1, color: c.cyan, icon: "🎯", q: "Masalah apa yang mau dipecahkan?",
@@ -507,7 +518,7 @@ function CrispSec({ c }) {
           <text x={250} y={260} textAnchor="middle" fill={c.dim} fontSize={9} fontFamily="inherit" fontStyle="italic">↻ Iteratif — bisa kembali ke fase sebelumnya</text>
         </svg>
       </Cd>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 6, marginBottom: 14 }}>
         {ps.map((p, i) => (
           <div key={i} onClick={() => setSel(sel === i ? null : i)}
             style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer",
@@ -539,7 +550,7 @@ function CrispSec({ c }) {
 }
 
 // ═══════ 9. CASE STUDY ═══════
-function CaseStudySec({ c }) {
+function CaseStudySec({ c, isMobile }) {
   const [step, setStep] = useState(0);
   const ss = [
     { ph: "Business Understanding", color: c.cyan, icon: "🏥", items: [
@@ -591,7 +602,7 @@ function CaseStudySec({ c }) {
           <span style={{ fontSize: 24 }}>{ss[step].icon}</span>
           <div><Tag color={ss[step].color}>Fase {step + 1}</Tag><h3 style={{ margin: "4px 0 0", color: ss[step].color, fontSize: 16 }}>{ss[step].ph}</h3></div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8 }}>
           {ss[step].items.map((it, i) => (
             <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: ss[step].color + "06",
               border: `1px solid ${ss[step].color}12`,
@@ -697,7 +708,7 @@ function FailuresSec({ c }) {
 }
 
 // ═══════ 12. METHODS ═══════
-function MethodsSec({ c }) {
+function MethodsSec({ c, isMobile }) {
   const ms = [
     { n: "KDD Process", f: "Teknis", color: c.cyan, steps: ["Selection", "Preprocessing", "Transformation", "Data Mining", "Interpretation"],
       d: "Knowledge Discovery in Databases — proses LINIER. Fokus teknis, kurang bicara bisnis." },
@@ -711,7 +722,7 @@ function MethodsSec({ c }) {
   return (
     <Sec c={c} id="methods" icon="📋" title="Metodologi Lainnya"
       sub="Semuanya punya pola mirip: pahami masalah → kumpulkan data → siapkan → model → evaluasi → deploy">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
         {ms.map((m, i) => (
           <Cd key={i} c={c} gl s={{ borderLeft: `3px solid ${m.color}` }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
@@ -746,6 +757,7 @@ function MethodsSec({ c }) {
 export default function App() {
   const [dark, setDark] = useState(false);
   const [nav, setNav] = useState("motivasi");
+  const isMobile = useIsMobile();
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(NAV.map(s=>s.id),nav,setNav);}catch{}
   const c = dark ? TH.dark : TH.light;
   useEffect(() => {
@@ -753,7 +765,7 @@ export default function App() {
     window.addEventListener("scroll", h); return () => window.removeEventListener("scroll", h);
   }, []);
   return (
-    <div style={{ minHeight: "100vh", background: c.bg, color: c.text, fontFamily: "'DM Sans','Noto Sans',sans-serif", transition: "background .4s,color .4s" }}>
+    <div style={{ minHeight: "100vh", background: c.bg, color: c.text, fontFamily: "'DM Sans','Noto Sans',sans-serif", transition: "background .4s,color .4s", overflowX: "hidden" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');*{box-sizing:border-box}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:${c.bdr};border-radius:3px}@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
       <div style={{ position: "sticky", top: 0, zIndex: 100, background: c.bg + "e0", backdropFilter: "blur(16px)", borderBottom: `1px solid ${c.bdr}`, padding: "7px 16px" }}>
         <div style={{ maxWidth: 920, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -772,9 +784,9 @@ export default function App() {
         </div>
       </div>
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px 80px" }}>
-        <MotivasiSec c={c} /><BigDataSec c={c} /><DefinisiSec c={c} /><AnalyticsSec c={c} />
-        <EcosystemSec c={c} /><RolesSec c={c} /><PipelineSec c={c} /><CrispSec c={c} />
-        <CaseStudySec c={c} /><DataTypesSec c={c} /><FailuresSec c={c} /><MethodsSec c={c} />
+        <MotivasiSec c={c} isMobile={isMobile} /><BigDataSec c={c} isMobile={isMobile} /><DefinisiSec c={c} /><AnalyticsSec c={c} isMobile={isMobile} />
+        <EcosystemSec c={c} isMobile={isMobile} /><RolesSec c={c} isMobile={isMobile} /><PipelineSec c={c} /><CrispSec c={c} isMobile={isMobile} />
+        <CaseStudySec c={c} isMobile={isMobile} /><DataTypesSec c={c} /><FailuresSec c={c} /><MethodsSec c={c} isMobile={isMobile} />
         <div style={{ marginTop: 60, padding: "20px 0", borderTop: `1px solid ${c.bdr}`, textAlign: "center" }}>
           <p style={{ margin: 0, fontSize: 11, color: c.dim }}>Materi 03 — Sains Data • CSGE603130 KASDD • Genap 2025/2026</p>
           <p style={{ margin: "3px 0 0", fontSize: 10, color: c.dim }}>Fakultas Ilmu Komputer — Universitas Indonesia</p>
