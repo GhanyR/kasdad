@@ -72,6 +72,11 @@ body {
   50% { box-shadow: 0 0 0 4px rgba(80, 70, 229, 0); }
 }
 
+/* Global box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* Mobile-specific overrides */
 @media (max-width: 640px) {
   /* Hide scrollbar on filter pills for cleaner mobile look */
@@ -81,5 +86,54 @@ body {
   .filter-scroll {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Prevent horizontal overflow globally */
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* Ensure all images, SVGs and canvases respect container width */
+  svg, img, canvas {
+    max-width: 100% !important;
+  }
+
+  /* Tables should scroll horizontally inside a wrapper */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  /* Ensure all divs don't overflow their parent */
+  div {
+    max-width: 100%;
+  }
+
+  /* Force multi-column grids to stack on mobile for components
+     that don't have their own isMobile detection.
+     Uses attribute selectors on rendered inline style attributes. */
+
+  /* 3-column grids → 1 column */
+  div[style*="grid-template-columns: repeat(3"],
+  div[style*="grid-template-columns: repeat(4"],
+  div[style*="grid-template-columns:repeat(3"],
+  div[style*="grid-template-columns:repeat(4"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 2-column "1fr 1fr" grids → 1 column (but not grids that already handle mobile) */
+  div[style*="grid-template-columns: 1fr 1fr;"],
+  div[style*="grid-template-columns:1fr 1fr;"],
+  div[style*="grid-template-columns: 1fr 1fr 1fr;"],
+  div[style*="grid-template-columns:1fr 1fr 1fr;"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Side-label grids (42px 1fr 1fr) → stack */
+  div[style*="42px 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
   }
 }

@@ -1,4 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 // ═══════════════════════════════════════════════════════════
 //   KASDAD MATERI 1 · KECERDASAN ARTIFISIAL
@@ -44,10 +55,10 @@ const Why = ({ children, t }) => (
 );
 
 const STitle = ({ t, ic, title, sub }) => (
-  <div style={{ textAlign: "center", marginBottom: 28, paddingTop: 4 }}>
-    <div style={{ fontSize: 36, marginBottom: 6 }}>{ic}</div>
-    <h2 style={{ fontSize: 24, fontWeight: 800, color: t.text, letterSpacing: -0.5, lineHeight: 1.2, margin: "0 0 6px" }}>{title}</h2>
-    {sub && <p style={{ fontSize: 13, color: t.sub, margin: 0, maxWidth: 520, marginInline: "auto", lineHeight: 1.6 }}>{sub}</p>}
+  <div style={{ textAlign: "center", marginBottom: 20, paddingTop: 4 }}>
+    <div style={{ fontSize: 28, marginBottom: 6 }}>{ic}</div>
+    <h2 style={{ fontSize: 20, fontWeight: 800, color: t.text, letterSpacing: -0.5, lineHeight: 1.2, margin: "0 0 6px" }}>{title}</h2>
+    {sub && <p style={{ fontSize: 12.5, color: t.sub, margin: 0, maxWidth: 520, marginInline: "auto", lineHeight: 1.6 }}>{sub}</p>}
   </div>
 );
 
@@ -60,7 +71,7 @@ const InfoBlock = ({ t, label, text, col }) => (
 
 // ═══════════ SECTION 1: DEFINISI AI ═══════════
 
-function DefSection({ t }) {
+function DefSection({ t, isMobile }) {
   const [sel, setSel] = useState(null);
   const defs = [
     { q: "Thinking Humanly", label: "Cognitive Modeling", ic: "🧠", col: t.rose,
@@ -98,11 +109,48 @@ function DefSection({ t }) {
       <STitle t={t} ic="📖" title="4 Definisi Kecerdasan Artifisial" sub="Russell & Norvig membagi definisi AI berdasarkan 2 dimensi: Thinking vs Acting, dan Humanly vs Rationally" />
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         {/* Column headers */}
-        <div style={{ display: "grid", gridTemplateColumns: "42px 1fr 1fr", gap: 10, marginBottom: 6 }}>
-          <div/>
-          <div style={{ textAlign: "center", fontSize: 10.5, fontWeight: 700, color: t.dim, letterSpacing: 2 }}>👤 HUMAN-LIKE</div>
-          <div style={{ textAlign: "center", fontSize: 10.5, fontWeight: 700, color: t.dim, letterSpacing: 2 }}>📐 RATIONAL</div>
-        </div>
+        {!isMobile && (
+          <div style={{ display: "grid", gridTemplateColumns: "42px 1fr 1fr", gap: 10, marginBottom: 6 }}>
+            <div/>
+            <div style={{ textAlign: "center", fontSize: 10.5, fontWeight: 700, color: t.dim, letterSpacing: 2 }}>👤 HUMAN-LIKE</div>
+            <div style={{ textAlign: "center", fontSize: 10.5, fontWeight: 700, color: t.dim, letterSpacing: 2 }}>📐 RATIONAL</div>
+          </div>
+        )}
+        {isMobile ? (
+          /* Mobile: stack all 4 cards vertically */
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {defs.map((d, idx) => {
+              const isO = sel === idx;
+              return (
+                <div key={idx} onClick={() => setSel(isO ? null : idx)} style={{
+                  padding: "14px 16px", borderRadius: 16, cursor: "pointer",
+                  background: isO ? d.col + "0a" : t.card, border: `1.5px solid ${isO ? d.col + "50" : t.border}`,
+                  transition: "all 0.3s", boxShadow: isO ? `0 0 24px ${d.col}10` : "none",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <span style={{ fontSize: 22 }}>{d.ic}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: d.col }}>{d.label}</div>
+                      <div style={{ fontSize: 10, color: t.dim }}>{d.who}</div>
+                    </div>
+                    {d.star && <Pill color={d.col}>Model Standar</Pill>}
+                  </div>
+                  <p style={{ fontSize: 12.5, color: isO ? t.text : t.sub, lineHeight: 1.6, margin: 0 }}>{d.core}</p>
+                  {isO && (
+                    <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
+                      <InfoBlock t={t} label="Pendekatan" text={d.method} col={d.col} />
+                      <InfoBlock t={t} label="Bidang Terkait" text={d.field} col={t.teal} />
+                      <InfoBlock t={t} label="Contoh Nyata" text={d.ex} col={t.sky} />
+                      <InfoBlock t={t} label="Kritik / Kelemahan" text={d.critique} col={t.rose} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+        /* Desktop: 2x2 grid with row labels */
+        <>
         {[["🧠", "THOUGHT", [0, 1]], ["🦾", "BEHAVIOR", [2, 3]]].map(([rowIc, rowLabel, idxs], ri) => (
           <div key={ri} style={{ display: "grid", gridTemplateColumns: "42px 1fr 1fr", gap: 10, marginBottom: 10 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
@@ -139,6 +187,8 @@ function DefSection({ t }) {
             })}
           </div>
         ))}
+        </>
+        )}
       </div>
       <Why t={t}>
         Di kuliah ini, kita pakai pendekatan <strong style={{ color: t.gold }}>Acting Rationally</strong> karena paling mudah dimodelkan secara matematis. Tapi ada <strong style={{ color: t.rose }}>Value Alignment Problem</strong> — bagaimana memastikan tujuan mesin selaras dengan keinginan manusia? Contoh: mesin catur yang disuruh "menang" bisa curang. Solusinya → <strong style={{ color: t.teal }}>Provably Beneficial AI</strong>.
@@ -149,7 +199,7 @@ function DefSection({ t }) {
 
 // ═══════════ SECTION 2: AGEN CERDAS ═══════════
 
-function AgentSection({ t }) {
+function AgentSection({ t, isMobile }) {
   return (
     <div>
       <STitle t={t} ic="🤖" title="Agen Cerdas" sub="Agen = entitas yang merasakan lingkungan lewat sensor, lalu bertindak lewat aktuator" />
@@ -198,7 +248,7 @@ function AgentSection({ t }) {
         {/* Formula */}
         <div style={{ padding: "16px 20px", borderRadius: 14, background: t.gold + "04", border: `1px solid ${t.gold}15`, marginBottom: 16 }}>
           <div style={{ textAlign: "center", fontSize: 22, fontWeight: 800, color: t.gold, fontFamily: "'Courier New', monospace", marginBottom: 10 }}>f : P* → A</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 8 }}>
             {[
               { sym: "P*", name: "Percept Sequence", desc: "Seluruh riwayat percept dari awal — bukan cuma yang sekarang! Ini complete history.", col: t.violet },
               { sym: "A", name: "Action", desc: "Tindakan yang dipilih agen: gerakan fisik (belok), atau keputusan (approve/reject).", col: t.rose },
@@ -217,7 +267,7 @@ function AgentSection({ t }) {
         <div style={{ padding: "18px 20px", borderRadius: 14, background: t.card, border: `1px solid ${t.border}`, marginBottom: 16 }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: t.text, marginBottom: 4 }}>🎯 PEAS Framework</div>
           <div style={{ fontSize: 11.5, color: t.sub, marginBottom: 14 }}>Sebelum desain agen, definisikan <strong style={{ color: t.text }}>lingkup tugasnya</strong>. Contoh: Taksi Otonom</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8 }}>
             {[
               { l: "P", full: "Performance", desc: "Ukuran sukses → aman, cepat, patuh rambu, nyaman", col: t.gold, note: "Diukur pada LINGKUNGAN, bukan state agen!" },
               { l: "E", full: "Environment", desc: "Dunia luar → jalan, rambu, kendaraan lain, penumpang", col: t.teal, note: "Menentukan seberapa sulit masalah agen" },
@@ -246,7 +296,7 @@ function AgentSection({ t }) {
 
 // ═══════════ SECTION 3: ENVIRONMENT TYPES ═══════════
 
-function EnvSection({ t }) {
+function EnvSection({ t, isMobile }) {
   const [open, setOpen] = useState(null);
   const envs = [
     { prop: "Observable", a: "Fully", b: "Partially", ic: "👁️", col: t.teal, mean: "Apakah sensor bisa lihat SELURUH keadaan lingkungan?", exA: "Catur — seluruh papan terlihat", exB: "Mengemudi — ada blind spot", why: "Jika partially → agen perlu internal state/model untuk melacak hal yang tidak terlihat." },
@@ -266,9 +316,9 @@ function EnvSection({ t }) {
           const isO = open === i;
           return (
             <div key={i} style={{ marginBottom: 6, borderRadius: 14, overflow: "hidden", border: `1px solid ${isO ? e.col + "35" : t.border}`, background: isO ? e.col + "04" : t.card, transition: "all 0.3s", cursor: "pointer" }} onClick={() => setOpen(isO ? null : i)}>
-              <div style={{ display: "flex", alignItems: "center", padding: "13px 18px", gap: 12 }}>
-                <span style={{ fontSize: 20 }}>{e.ic}</span>
-                <span style={{ flex: 1, fontSize: 14, fontWeight: 700, color: t.text }}>{e.prop}</span>
+              <div style={{ display: "flex", alignItems: "center", padding: isMobile ? "10px 12px" : "13px 18px", gap: isMobile ? 6 : 12, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+                <span style={{ fontSize: isMobile ? 16 : 20 }}>{e.ic}</span>
+                <span style={{ flex: 1, fontSize: isMobile ? 13 : 14, fontWeight: 700, color: t.text, minWidth: isMobile ? 80 : "auto" }}>{e.prop}</span>
                 <Pill color={t.teal}>{e.a}</Pill>
                 <span style={{ fontSize: 10, color: t.dim }}>vs</span>
                 <Pill color={t.rose}>{e.b}</Pill>
@@ -280,7 +330,7 @@ function EnvSection({ t }) {
                     <div style={{ fontSize: 10, fontWeight: 700, color: e.col, letterSpacing: 1 }}>APA MAKSUDNYA?</div>
                     <div style={{ fontSize: 12, color: t.text, lineHeight: 1.6, marginTop: 2 }}>{e.mean}</div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 10 }}>
                     <div style={{ padding: "10px 14px", borderRadius: 10, background: t.teal + "06", borderLeft: `3px solid ${t.teal}35` }}>
                       <div style={{ fontSize: 10, fontWeight: 700, color: t.teal }}>{e.a}</div>
                       <div style={{ fontSize: 11.5, color: t.sub, marginTop: 3 }}>{e.exA}</div>
@@ -300,7 +350,7 @@ function EnvSection({ t }) {
           );
         })}
         {/* Comparison table */}
-        <div style={{ marginTop: 16, padding: "18px 20px", borderRadius: 14, background: t.card, border: `1px solid ${t.border}`, overflowX: "auto" }}>
+        <div style={{ marginTop: 16, padding: isMobile ? "14px 12px" : "18px 20px", borderRadius: 14, background: t.card, border: `1px solid ${t.border}`, overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: t.gold, marginBottom: 12 }}>📊 Perbandingan (sering keluar UTS!)</div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
             <thead><tr>{["", "Catur + Clock", "Catur biasa", "Mengemudi"].map((h,i) => (<th key={i} style={{ padding: "8px 10px", textAlign: "left", borderBottom: `2px solid ${t.border}`, color: i===0?t.dim:t.gold, fontWeight: 700, fontSize: 10 }}>{h}</th>))}</tr></thead>
@@ -324,7 +374,7 @@ function EnvSection({ t }) {
 
 // ═══════════ SECTION 4: AGENT TYPES ═══════════
 
-function ATypeSection({ t }) {
+function ATypeSection({ t, isMobile }) {
   const [sel, setSel] = useState(null);
   const agents = [
     { name: "Simple Reflex", lv: 1, ic: "💡", col: t.teal, core: "Langsung respon percept sekarang — seperti refleks, tanpa ingatan", how: "IF kondisi THEN aksi. Tidak ada memori, tidak ada model.", ex: "Thermostat: IF suhu > 25°C THEN nyalakan AC", limit: "Hanya bekerja di fully observable. Tanpa memori → bisa infinite loop.", key: "Paling sederhana. Zero internal state." },
@@ -372,12 +422,12 @@ function ATypeSection({ t }) {
 
 // ═══════════ SECTION 5: TAXONOMY ═══════════
 
-function TaxoSection({ t }) {
+function TaxoSection({ t, isMobile }) {
   return (
     <div>
       <STitle t={t} ic="🗂️" title="Taksonomi AI" sub="Peta besar AI — di mana kita sekarang?" />
       <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 20 }}>
           {[{ title: "Narrow AI (Weak)", ic: "🎯", col: t.teal, status: "✅ SUDAH ADA", sCl: t.teal, desc: "Satu tugas spesifik saja. Tidak bisa generalisasi.", ex: "Chatbot reservasi, spam filter, face recognition", trait: "Repetitif, tanpa keputusan otonom" },
             { title: "General AI (Strong)", ic: "🧠", col: t.violet, status: "❌ MASIH RISET", sCl: t.rose, desc: "Semua tugas seperti manusia — berpikir, menalar, belajar.", ex: "??? (belum ada)", trait: "Pengambilan keputusan otonom" }].map((c,i) => (
             <div key={i} style={{ padding: "18px", borderRadius: 16, background: c.col+"06", border: `1px solid ${c.col}20` }}>
@@ -409,7 +459,7 @@ function TaxoSection({ t }) {
         </div>
         <div style={{ padding: "18px 20px", borderRadius: 14, background: t.card, border: `1px solid ${t.border}` }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: t.gold, letterSpacing: 1, marginBottom: 12 }}>3 POKOK BAHASAN AI</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 8 }}>
             {[{ ic: "🔍", n: "Search & Optimization", d: "BFS, DFS, UCS, A*, Gradient Descent", col: t.teal },
               { ic: "📐", n: "Logic & Knowledge", d: "Propositional Logic, FOL, Bayesian Net", col: t.violet },
               { ic: "⚡", n: "Learning Agents", d: "Decision Tree, KNN, Neural Network", col: t.gold, focus: true }].map((a,i) => (
@@ -429,7 +479,7 @@ function TaxoSection({ t }) {
 
 // ═══════════ SECTION 6: HISTORY ═══════════
 
-function HistSection({ t }) {
+function HistSection({ t, isMobile }) {
   const ev = [
     { yr: "1943", txt: "McCulloch & Pitts: model neuron buatan pertama — pondasi neural networks", col: t.teal, era: "Fondasi" },
     { yr: "1950", txt: "Turing menulis \"Computing Machinery & Intelligence\" → Turing Test", col: t.teal, era: "Fondasi" },
@@ -470,7 +520,7 @@ function HistSection({ t }) {
 
 // ═══════════ SECTION 7: ML BASICS ═══════════
 
-function MLSection({ t }) {
+function MLSection({ t, isMobile }) {
   const [openML, setOpenML] = useState(null);
   const types = [
     { name: "Supervised Learning", ic: "🏷️", col: t.gold, idea: "Belajar dari data + label (jawaban benar)", input: "Data + Label", output: "Model prediktif",
@@ -489,8 +539,8 @@ function MLSection({ t }) {
       <STitle t={t} ic="⚡" title="Konsep Dasar Machine Learning" sub="Komputer belajar pola dari data, bukan diprogram manual" />
       <div style={{ maxWidth: 720, margin: "0 auto" }}>
         {/* Traditional vs ML */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-          <div style={{ padding: "18px", borderRadius: 16, background: t.card, border: `1px solid ${t.border}`, textAlign: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 20 }}>
+          <div style={{ padding: isMobile ? "14px" : "18px", borderRadius: 16, background: t.card, border: `1px solid ${t.border}`, textAlign: "center" }}>
             <div style={{ fontSize: 10.5, fontWeight: 700, color: t.dim, letterSpacing: 1.5, marginBottom: 14 }}>TRADITIONAL PROGRAMMING</div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, flexWrap: "wrap" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -533,16 +583,16 @@ function MLSection({ t }) {
                 <span style={{ fontSize: 14, color: t.dim, transform: isO ? "rotate(180deg)" : "", transition: "transform 0.3s" }}>▾</span>
               </div>
               {isO && (
-                <div style={{ padding: "0 18px 16px" }}>
+                <div style={{ padding: isMobile ? "0 12px 14px" : "0 18px 16px" }}>
                   <div style={{ padding: "10px 14px", borderRadius: 10, background: t.gold+"06", borderLeft: `3px solid ${t.gold}35`, marginBottom: 10 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: t.gold, letterSpacing: 1 }}>🎯 ANALOGINYA</div>
                     <div style={{ fontSize: 12, color: t.text, lineHeight: 1.6, marginTop: 2 }}>{ml.why}</div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 10 }}>
                     <div style={{ padding: "10px", borderRadius: 8, background: t.surfaceAlt }}><div style={{ fontSize: 9, fontWeight: 700, color: t.teal, letterSpacing: 1 }}>INPUT</div><div style={{ fontSize: 11.5, color: t.text, marginTop: 2 }}>{ml.input}</div></div>
                     <div style={{ padding: "10px", borderRadius: 8, background: t.surfaceAlt }}><div style={{ fontSize: 9, fontWeight: 700, color: t.rose, letterSpacing: 1 }}>OUTPUT</div><div style={{ fontSize: 11.5, color: t.text, marginTop: 2 }}>{ml.output}</div></div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8 }}>
                     {ml.kids.map((k,j) => (
                       <div key={j} style={{ padding: "12px", borderRadius: 10, background: k.col+"06", border: `1px solid ${k.col}12` }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}><span>{k.ic}</span><span style={{ fontSize: 12, fontWeight: 700, color: k.col }}>{k.name}</span></div>
@@ -560,7 +610,7 @@ function MLSection({ t }) {
         {/* 3 Elements */}
         <div style={{ marginTop: 16, padding: "18px 20px", borderRadius: 14, background: t.card, border: `1px solid ${t.border}` }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: t.gold, marginBottom: 12 }}>🔑 3 Elemen Kunci ML <span style={{ fontWeight: 400, color: t.dim }}>(Domingos 2012)</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 8, marginBottom: 12 }}>
             {[{ n: "Representation", d: "Bentuk model?", ex: "Decision Tree, NN, KNN", ic: "🏗️", col: t.teal },
               { n: "Evaluation", d: "Ukur kualitas?", ex: "Accuracy, MSE, F1", ic: "📏", col: t.gold },
               { n: "Optimization", d: "Cari model terbaik?", ex: "Gradient Descent, Greedy", ic: "⚡", col: t.rose }].map((e,i) => (
@@ -588,37 +638,38 @@ function MLSection({ t }) {
 export default function App() {
   const [dark, setDark] = useState(false);
   const [sec, setSec] = useState("def");
+  const isMobile = useIsMobile();
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTS.map(s=>s.id),sec,setSec);}catch{}
   const t = dark ? P.dark : P.light;
   const R = { def: DefSection, agent: AgentSection, env: EnvSection, atype: ATypeSection, taxo: TaxoSection, hist: HistSection, ml: MLSection };
   const Content = R[sec];
 
   return (
-    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'Segoe UI', -apple-system, sans-serif", transition: "background 0.35s, color 0.35s" }}>
+    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'Segoe UI', -apple-system, sans-serif", transition: "background 0.35s, color 0.35s", overflowX: "hidden" }}>
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:${t.faint};border-radius:4px}strong{color:${t.text};font-weight:700}`}</style>
 
-      <div style={{ padding: "14px 20px 10px", borderBottom: `1px solid ${t.border}`, background: t.bg+"ee", backdropFilter: "blur(12px)", position: "sticky", top: 0, zIndex: 100, display: "flex", alignItems: "center" }}>
-        <div style={{ flex: 1 }}>
+      <div style={{ padding: isMobile ? "10px 12px 8px" : "14px 20px 10px", borderBottom: `1px solid ${t.border}`, background: t.bg+"ee", backdropFilter: "blur(12px)", position: "sticky", top: 0, zIndex: 100, display: "flex", alignItems: "center" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
             <Pill color={t.gold}>Materi 1</Pill>
             <span style={{ fontSize: 10, color: t.dim }}>KASDAD · Week 1</span>
           </div>
-          <h1 style={{ fontSize: 19, fontWeight: 800, color: t.text, letterSpacing: -0.3 }}>Kecerdasan Artifisial</h1>
+          <h1 style={{ fontSize: isMobile ? 16 : 19, fontWeight: 800, color: t.text, letterSpacing: -0.3 }}>Kecerdasan Artifisial</h1>
         </div>
-        <button onClick={() => setDark(!dark)} style={{ background: t.card, border: `1px solid ${t.border}`, borderRadius: 10, width: 40, height: 40, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{dark ? "☀️" : "🌙"}</button>
+        <button onClick={() => setDark(!dark)} style={{ background: t.card, border: `1px solid ${t.border}`, borderRadius: 10, width: 36, height: 36, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{dark ? "☀️" : "🌙"}</button>
       </div>
 
-      <div style={{ padding: "8px 12px", overflowX: "auto", display: "flex", gap: 4, borderBottom: `1px solid ${t.border}`, background: t.bg+"ee", backdropFilter: "blur(12px)", position: "sticky", top: 68, zIndex: 99 }}>
+      <div style={{ padding: isMobile ? "6px 8px" : "8px 12px", overflowX: "auto", display: "flex", gap: 4, borderBottom: `1px solid ${t.border}`, background: t.bg+"ee", backdropFilter: "blur(12px)", position: "sticky", top: isMobile ? 52 : 68, zIndex: 99, WebkitOverflowScrolling: "touch" }}>
         {SECTS.map(s => (
-          <button key={s.id} onClick={() => setSec(s.id)} style={{ background: sec===s.id ? t.gold+"12" : "transparent", border: `1px solid ${sec===s.id ? t.gold+"30" : "transparent"}`, borderRadius: 10, padding: "7px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", transition: "all 0.2s" }}>
-            <span style={{ fontSize: 14 }}>{s.ic}</span>
-            <span style={{ fontSize: 11.5, fontWeight: 600, color: sec===s.id ? t.gold : t.sub }}>{s.label}</span>
+          <button key={s.id} onClick={() => setSec(s.id)} style={{ background: sec===s.id ? t.gold+"12" : "transparent", border: `1px solid ${sec===s.id ? t.gold+"30" : "transparent"}`, borderRadius: 10, padding: isMobile ? "6px 10px" : "7px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: isMobile ? 3 : 5, whiteSpace: "nowrap", transition: "all 0.2s", flexShrink: 0 }}>
+            <span style={{ fontSize: isMobile ? 12 : 14 }}>{s.ic}</span>
+            <span style={{ fontSize: isMobile ? 10 : 11.5, fontWeight: 600, color: sec===s.id ? t.gold : t.sub }}>{s.label}</span>
           </button>
         ))}
       </div>
 
-      <div key={sec} style={{ padding: "24px 16px 80px", maxWidth: 820, margin: "0 auto", animation: "fadeIn 0.3s ease-out" }}>
-        <Content t={t} />
+      <div key={sec} style={{ padding: isMobile ? "16px 12px 80px" : "24px 16px 80px", maxWidth: 820, margin: "0 auto", animation: "fadeIn 0.3s ease-out" }}>
+        <Content t={t} isMobile={isMobile} />
       </div>
     </div>
   );

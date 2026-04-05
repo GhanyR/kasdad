@@ -1,4 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  MATERI 6: REDUKSI DIMENSI & PCA — Interactive Visualization
@@ -90,7 +101,7 @@ function Arrow({ x1, y1, x2, y2, color, width = 2, dashed = false }) {
 
 // ═══════════ SECTION COMPONENTS ═══════════
 
-function IntroSection({ t }) {
+function IntroSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="🎯" title="Apa itu Dimensionality Reduction?" />
@@ -126,7 +137,7 @@ function IntroSection({ t }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 20 }}>
         {[
           { icon: "🏗️", title: "Tujuan", desc: "Cari representasi berdimensi lebih rendah" },
           { icon: "🧬", title: "Metode", desc: "PCA (Principal Component Analysis)" },
@@ -147,7 +158,7 @@ function IntroSection({ t }) {
   );
 }
 
-function CovarianceSection({ t }) {
+function CovarianceSection({ t, isMobile }) {
   const [hoveredCell, setHoveredCell] = useState(null);
   const irisData = [
     ["", "Sepal L", "Sepal W", "Petal L", "Petal W"],
@@ -245,7 +256,7 @@ function CovarianceSection({ t }) {
       )}
 
       <div style={{
-        marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8,
+        marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8,
       }}>
         <div style={{ background: `${t.accent3}15`, borderRadius: 8, padding: 10, fontSize: 12, color: t.textMuted }}>
           <b style={{ color: t.accent3 }}>Tertinggi:</b> cov(Petal L, Petal W) = 1.296
@@ -325,7 +336,7 @@ function BasisSection({ t }) {
   );
 }
 
-function TransformSection({ t }) {
+function TransformSection({ t, isMobile }) {
   const [step, setStep] = useState(0);
   const w = 340, h = 240, cx = w / 2, cy = h / 2, sc = 35;
   const rawPt = [2, 2];
@@ -355,7 +366,7 @@ function TransformSection({ t }) {
         <div style={{ fontSize: 12, color: t.textDim, marginBottom: 8 }}>Dari B1 standar ke B2 = {"{"} (1,1), (1,-1) {"}"}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontSize: 15, color: t.text, flexWrap: "wrap" }}>
           <span style={{ color: t.textDim }}>[T] =</span>
-          <div style={{ display: "inline-grid", gridTemplateColumns: "1fr 1fr", gap: "2px 12px", padding: "6px 14px", border: `2px solid ${t.accent}40`, borderRadius: 6 }}>
+          <div style={{ display: "inline-grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "2px 12px", padding: "6px 14px", border: `2px solid ${t.accent}40`, borderRadius: 6 }}>
             <span style={{ color: t.accent }}>0.5</span><span style={{ color: t.accent3 }}>0.5</span>
             <span style={{ color: t.accent }}>0.5</span><span style={{ color: t.danger }}>-0.5</span>
           </div>
@@ -394,7 +405,7 @@ function TransformSection({ t }) {
   );
 }
 
-function EigenSection({ t }) {
+function EigenSection({ t, isMobile }) {
   const [showTransform, setShowTransform] = useState(false);
   const w = 320, h = 260, cx = w / 2, cy = h / 2, sc = 40;
 
@@ -415,7 +426,7 @@ function EigenSection({ t }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 16 }}>
         {[
           { title: "Properti 1", desc: "Hanya untuk matriks persegi (n×n)", color: t.accent },
           { title: "Properti 2", desc: "Maks punya n nilai eigen", color: t.accent2 },
@@ -460,7 +471,7 @@ function EigenSection({ t }) {
   );
 }
 
-function DiagonalSection({ t }) {
+function DiagonalSection({ t, isMobile }) {
   return (
     <div>
       <SectionTitle t={t} icon="🔲" title="Diagonalisasi Matriks" />
@@ -500,7 +511,7 @@ function DiagonalSection({ t }) {
         {/* Before */}
         <div style={{ background: t.bgCard, borderRadius: 10, padding: 12, border: `1px solid ${t.danger}30`, textAlign: "center" }}>
           <div style={{ fontSize: 10, color: t.danger, fontWeight: 600, marginBottom: 6 }}>SEBELUM</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2, fontFamily: "'Fira Code', monospace", fontSize: 11 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 2, fontFamily: "'Fira Code', monospace", fontSize: 11 }}>
             {[
               [t.accentWarm, t.danger, t.danger],
               [t.danger, t.accentWarm, t.danger],
@@ -522,7 +533,7 @@ function DiagonalSection({ t }) {
         {/* After */}
         <div style={{ background: t.bgCard, borderRadius: 10, padding: 12, border: `1px solid ${t.accent3}30`, textAlign: "center" }}>
           <div style={{ fontSize: 10, color: t.accent3, fontWeight: 600, marginBottom: 6 }}>SESUDAH</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2, fontFamily: "'Fira Code', monospace", fontSize: 11 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 2, fontFamily: "'Fira Code', monospace", fontSize: 11 }}>
             {[0, 1, 2].map(i => [0, 1, 2].map(j => (
               <div key={`${i}${j}`} style={{
                 width: 36, height: 28, display: "flex", alignItems: "center", justifyContent: "center",
@@ -896,15 +907,16 @@ export default function PCAVisualization() {
   const [activeSection, setActiveSection] = useState("intro");
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const t = THEMES[theme];
+  const isMobile = useIsMobile();
 
   const renderSection = () => {
     switch (activeSection) {
-      case "intro": return <IntroSection t={t} />;
-      case "covariance": return <CovarianceSection t={t} />;
+      case "intro": return <IntroSection t={t} isMobile={isMobile} />;
+      case "covariance": return <CovarianceSection t={t} isMobile={isMobile} />;
       case "basis": return <BasisSection t={t} />;
-      case "transform": return <TransformSection t={t} />;
-      case "eigen": return <EigenSection t={t} />;
-      case "diagonal": return <DiagonalSection t={t} />;
+      case "transform": return <TransformSection t={t} isMobile={isMobile} />;
+      case "eigen": return <EigenSection t={t} isMobile={isMobile} />;
+      case "diagonal": return <DiagonalSection t={t} isMobile={isMobile} />;
       case "pca-steps": return <PCAStepsSection t={t} />;
       case "variance": return <VarianceSection t={t} />;
       case "app": return <ApplicationSection t={t} />;
@@ -916,6 +928,7 @@ export default function PCAVisualization() {
     <div style={{
       minHeight: "100vh", background: t.bg, color: t.text,
       fontFamily: "'DM Sans', 'Segoe UI', sans-serif", transition: "all 0.3s",
+      overflowX: "hidden",
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap');

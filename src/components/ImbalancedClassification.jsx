@@ -2,6 +2,17 @@ import { useState, useEffect, useRef } from "react";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');`;
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const themes = {
   dark: {
     bg: "#08080a", bgCard: "#111114", bgCardHover: "#18181c",
@@ -153,7 +164,7 @@ function TomekSVG() {
 }
 
 // ─── COST MATRIX VISUAL ───
-function CostMatrixVisual({ t: theme }) {
+function CostMatrixVisual({ t: theme, isMobile }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "auto 1fr 1fr", gap: 0, fontSize: 12, fontFamily: "'IBM Plex Mono', monospace", maxWidth: 360 }}>
       <div style={{ padding: "8px 12px" }}></div>
@@ -280,11 +291,11 @@ function SectionIntro({ section }) {
 
 // ─── MAIN SECTIONS CONTENT ───
 
-function IntroSection({ theme, t }) {
+function IntroSection({ theme, t, isMobile }) {
   const dots = ImbalanceDots({ t, ratio: 0.08 });
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 28 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, marginBottom: 28 }}>
         {/* Left: Definition */}
         <div style={{ padding: 20, borderRadius: 16, background: theme.bgCard, border: `1px solid ${theme.border}` }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: theme.gold, letterSpacing: 2, marginBottom: 10, fontFamily: "'IBM Plex Mono', monospace" }}>DEFINISI</div>
@@ -362,7 +373,7 @@ function IntroSection({ theme, t }) {
   );
 }
 
-function CausesSection({ theme }) {
+function CausesSection({ theme, isMobile }) {
   const causes = [
     { icon: "🎯", title: "Biased Sampling", color: "orange",
       desc: "Data dikumpulkan secara random tapi kelas langka tidak cukup muncul.",
@@ -378,7 +389,7 @@ function CausesSection({ theme }) {
       example: "Hanya 20 dari 10.000 orang yang punya penyakit tertentu" },
   ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
       {causes.map((c, i) => (
         <div key={i} style={{
           padding: 18, borderRadius: 14,
@@ -399,10 +410,10 @@ function CausesSection({ theme }) {
   );
 }
 
-function ChallengesSection({ theme }) {
+function ChallengesSection({ theme, isMobile }) {
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14, marginBottom: 20 }}>
         {[
           { title: "Dataset Size", icon: "📦", color: "orange",
             desc: "Dataset kecil + imbalanced = model tidak punya cukup contoh minority untuk belajar. Dengan n=100 dan rasio 1:100, hanya ada 1 minority sample!" },
@@ -442,7 +453,7 @@ function ChallengesSection({ theme }) {
   );
 }
 
-function EvalSection({ theme }) {
+function EvalSection({ theme, isMobile }) {
   return (
     <div>
       {/* Stratified CV */}
@@ -466,7 +477,7 @@ function EvalSection({ theme }) {
           ]}
         />
 
-        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
           <div style={{ padding: 14, borderRadius: 10, background: theme.blueDim, border: `1px solid ${theme.blueBorder}` }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: theme.blue, letterSpacing: 1, marginBottom: 6 }}>PYTHON CODE</div>
             <code style={{ fontSize: 11, color: theme.text, fontFamily: "'IBM Plex Mono', monospace", lineHeight: 1.8 }}>
@@ -487,7 +498,7 @@ function EvalSection({ theme }) {
   );
 }
 
-function CostSection({ theme }) {
+function CostSection({ theme, isMobile }) {
   return (
     <div>
       {/* What is Cost-Sensitive */}
@@ -496,10 +507,10 @@ function CostSection({ theme }) {
         <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
           Biasanya ML minimize <strong>error</strong>. Dengan cost-sensitive learning, kita kasih <strong style={{ color: theme.purple }}>hukuman (penalty) berbeda</strong> untuk jenis kesalahan berbeda. False Negative (gagal deteksi penyakit) jauh lebih mahal daripada False Positive (false alarm)!
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: theme.textDim, marginBottom: 10 }}>COST MATRIX (Rasio 1:100)</div>
-            <CostMatrixVisual t={theme} />
+            <CostMatrixVisual t={theme} isMobile={isMobile} />
           </div>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: theme.textDim, marginBottom: 10 }}>CONTOH DUNIA NYATA</div>
@@ -524,7 +535,7 @@ function CostSection({ theme }) {
           theme={theme} accent="purple"
         />
         <div style={{ fontSize: 11, fontWeight: 700, color: theme.textDim, marginTop: 16, marginBottom: 10 }}>CONTOH HITUNG: 10.000 data, 9.900 kelas 0, 100 kelas 1</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
           <div style={{ padding: 14, borderRadius: 10, background: theme.blueDim, border: `1px solid ${theme.blueBorder}` }}>
             <div style={{ fontSize: 11, color: theme.blue, fontWeight: 600, marginBottom: 6 }}>Kelas 0 (majority)</div>
             <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: theme.text, lineHeight: 2 }}>
@@ -568,7 +579,7 @@ function CostSection({ theme }) {
   );
 }
 
-function OversampleSection({ theme }) {
+function OversampleSection({ theme, isMobile }) {
   const [tab, setTab] = useState("random");
   const methods = [
     { id: "random", label: "Random", color: "green" },
@@ -602,7 +613,7 @@ function OversampleSection({ theme }) {
           <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
             Cara paling simpel: <strong>duplikat</strong> data minority secara random sampai seimbang. Misal: 9900 majority + 100 minority → duplikasi minority jadi 9900 juga.
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
             <div style={{ padding: 14, borderRadius: 10, background: theme.greenDim, border: `1px solid ${theme.greenBorder}` }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: theme.green, marginBottom: 6 }}>✅ KELEBIHAN</div>
               <div style={{ fontSize: 11, color: theme.textMuted, lineHeight: 1.7 }}>Simpel, cepat, cocok untuk dataset besar, bisa membantu model iteratif (SGD, Decision Tree)</div>
@@ -624,7 +635,7 @@ function OversampleSection({ theme }) {
           <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
             Bukan duplikasi! SMOTE <strong style={{ color: theme.gold }}>membuat data BARU (sintetis)</strong> dengan interpolasi antara data minority yang sudah ada.
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 16, marginBottom: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.2fr", gap: 16, marginBottom: 16 }}>
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", background: theme.bgAccent, borderRadius: 12, padding: 10 }}>
               <SmoteSVG />
             </div>
@@ -649,7 +660,7 @@ function OversampleSection({ theme }) {
             description="gap = angka random antara 0 dan 1. Ini yang menentukan posisi data baru di garis antara X1 dan X11. Jika gap=0 → tepat di X1, gap=1 → tepat di X11."
             theme={theme} accent="gold"
           />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 12 }}>
             <div style={{ padding: 12, borderRadius: 10, background: theme.greenDim, fontSize: 11, color: theme.textMuted, lineHeight: 1.7 }}>
               <strong style={{ color: theme.green }}>✅</strong> Data baru beragam (bukan duplikat), dekat dengan existing data → lebih realistis
             </div>
@@ -673,7 +684,7 @@ function OversampleSection({ theme }) {
               ["🔴 Noise", "Semua tetangga = majority (#maj = k)", "Diabaikan (kemungkinan outlier)"],
             ]}
           />
-          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
             <div style={{ padding: 14, borderRadius: 10, background: theme.blueDim, border: `1px solid ${theme.blueBorder}` }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: theme.blue, marginBottom: 6 }}>Borderline-SMOTE</div>
               <div style={{ fontSize: 11, color: theme.textMuted, lineHeight: 1.6 }}>Pakai <strong>KNN</strong> untuk identifikasi borderline instances</div>
@@ -694,7 +705,7 @@ function OversampleSection({ theme }) {
           <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
             ADASYN <strong style={{ color: theme.purple }}>adaptif</strong>: membuat LEBIH BANYAK data sintetis untuk minority yang <strong>sulit dipelajari</strong> (dekat majority) dan lebih sedikit untuk yang mudah.
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
             <div style={{ padding: 14, borderRadius: 10, background: theme.purpleDim, border: `1px solid ${theme.purpleBorder}` }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: theme.purple, marginBottom: 6 }}>BEDANYA DENGAN BORDERLINE-SMOTE</div>
               <div style={{ fontSize: 11, color: theme.textMuted, lineHeight: 1.7 }}>
@@ -720,7 +731,7 @@ function OversampleSection({ theme }) {
   );
 }
 
-function UndersampleSection({ theme }) {
+function UndersampleSection({ theme, isMobile }) {
   const [tab, setTab] = useState("overview");
   const methods = [
     { id: "overview", label: "Overview", color: "cyan" },
@@ -766,7 +777,7 @@ function UndersampleSection({ theme }) {
           <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
             Pilih data majority berdasarkan <strong style={{ color: theme.blue }}>jaraknya ke minority class</strong>. Ada 3 versi:
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 12 }}>
             {[
               { v: "1", desc: "Majority dengan rata-rata jarak MINIMUM ke 3 minority TERDEKAT", effect: "Ambil yang dekat minority" },
               { v: "2", desc: "Majority dengan rata-rata jarak MINIMUM ke 3 minority TERJAUH", effect: "Ambil yang dekat semua minority" },
@@ -788,7 +799,7 @@ function UndersampleSection({ theme }) {
           <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
             Dua data (a, b) dari <strong>kelas berbeda</strong> disebut Tomek Link jika mereka saling menjadi <strong style={{ color: theme.gold }}>nearest neighbor satu sama lain</strong>. Tomek Links = data borderline/noisy.
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 16, marginBottom: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.2fr", gap: 16, marginBottom: 16 }}>
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", background: theme.bgAccent, borderRadius: 12, padding: 14 }}>
               <TomekSVG />
             </div>
@@ -844,7 +855,7 @@ function UndersampleSection({ theme }) {
   );
 }
 
-function CombineSection({ theme }) {
+function CombineSection({ theme, isMobile }) {
   return (
     <div>
       <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.8, marginBottom: 20, fontFamily: "'Crimson Pro', serif" }}>
@@ -864,7 +875,7 @@ function CombineSection({ theme }) {
       </div>
 
       {/* Combinations */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14, marginBottom: 20 }}>
         {[
           { title: "SMOTE + Random Under", desc: "SMOTE oversample minority, lalu random undersample majority. Paling sederhana.", code: "SMOTE() → RandomUnderSampler()", color: "green", result: "ROC AUC baseline" },
           { title: "SMOTE + Tomek Links", desc: "SMOTE buat data sintetis, Tomek Links bersihkan noise di boundary setelahnya.", code: "SMOTETomek()", color: "gold", result: "AUC: 0.815" },
@@ -910,6 +921,7 @@ export default function ImbalancedClassificationViz() {
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const [time, setTime] = useState(0);
   const t = themes[mode];
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const interval = setInterval(() => setTime(prev => prev + 16), 16);
@@ -918,14 +930,14 @@ export default function ImbalancedClassificationViz() {
 
   const renderSection = () => {
     switch (activeSection) {
-      case "intro": return <IntroSection theme={t} t={time} />;
-      case "causes": return <CausesSection theme={t} />;
-      case "challenges": return <ChallengesSection theme={t} />;
-      case "eval": return <EvalSection theme={t} />;
-      case "cost": return <CostSection theme={t} />;
-      case "oversample": return <OversampleSection theme={t} />;
-      case "undersample": return <UndersampleSection theme={t} />;
-      case "combine": return <CombineSection theme={t} />;
+      case "intro": return <IntroSection theme={t} t={time} isMobile={isMobile} />;
+      case "causes": return <CausesSection theme={t} isMobile={isMobile} />;
+      case "challenges": return <ChallengesSection theme={t} isMobile={isMobile} />;
+      case "eval": return <EvalSection theme={t} isMobile={isMobile} />;
+      case "cost": return <CostSection theme={t} isMobile={isMobile} />;
+      case "oversample": return <OversampleSection theme={t} isMobile={isMobile} />;
+      case "undersample": return <UndersampleSection theme={t} isMobile={isMobile} />;
+      case "combine": return <CombineSection theme={t} isMobile={isMobile} />;
       default: return null;
     }
   };
@@ -936,6 +948,7 @@ export default function ImbalancedClassificationViz() {
     <div style={{
       minHeight: "100vh", background: t.bg, color: t.text,
       fontFamily: "'Outfit', sans-serif", transition: "all 0.3s ease",
+      overflowX: "hidden",
     }}>
       <style>{FONTS}{`
         * { box-sizing: border-box; margin: 0; padding: 0; }

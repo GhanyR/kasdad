@@ -21,6 +21,17 @@ const THEMES = {
 
 const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 // ══════════════════════════════════════════
 //  SECTIONS DATA
 // ══════════════════════════════════════════
@@ -104,7 +115,7 @@ function Chip({ t, label, color, filled }) {
 // ══════════════════════════════════════════
 //  SECTION: OVERVIEW
 // ══════════════════════════════════════════
-function SectionOverview({ t }) {
+function SectionOverview({ t, isMobile }) {
   const [activeStep, setActiveStep] = useState(0);
   const steps = [
     { label: "Simpan Data Training", desc: "KNN tidak \"belajar\" model. Semua data training disimpan apa adanya.", icon: "💾" },
@@ -117,7 +128,7 @@ function SectionOverview({ t }) {
   return (
     <div>
       <div style={{
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24,
+        display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 24,
       }}>
         <VisualCard t={t} title="LAZY LEARNING" accent={t.orange}>
           <div style={{ textAlign: "center", marginBottom: 12 }}>
@@ -192,7 +203,7 @@ function SectionOverview({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: DISTANCE METRICS
 // ══════════════════════════════════════════
-function SectionDistance({ t }) {
+function SectionDistance({ t, isMobile }) {
   const [activeMetric, setActiveMetric] = useState("euclidean");
 
   const metrics = {
@@ -232,7 +243,7 @@ function SectionDistance({ t }) {
     <div>
       {/* Metric selector */}
       <div style={{
-        display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20,
+        display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: 8, marginBottom: 20,
       }}>
         {Object.entries(metrics).map(([key, val]) => (
           <button key={key} onClick={() => setActiveMetric(key)} style={{
@@ -252,7 +263,7 @@ function SectionDistance({ t }) {
 
       {/* Detail */}
       <div style={{
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16,
+        display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16,
       }}>
         <div>
           <FormulaBox t={t} formula={m.formula} color={m.color} />
@@ -320,7 +331,7 @@ function SectionDistance({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: CLASSIFICATION
 // ══════════════════════════════════════════
-function SectionClassification({ t }) {
+function SectionClassification({ t, isMobile }) {
   const [kVal, setKVal] = useState(3);
   
   const data = [
@@ -357,7 +368,7 @@ function SectionClassification({ t }) {
         Klasifikasi KNN menggunakan <span style={{ color: t.accent, fontWeight: 700 }}>majority voting</span> — label yang paling banyak muncul di antara K tetangga terdekat menjadi prediksi.
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         {/* Scatter plot */}
         <VisualCard t={t} title="SCATTER PLOT — SALARY RANK vs SPENDING SCORE">
           <svg viewBox="0 0 320 280" style={{ width: "100%", height: "auto" }}>
@@ -477,7 +488,7 @@ function SectionClassification({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: REGRESSION
 // ══════════════════════════════════════════
-function SectionRegression({ t }) {
+function SectionRegression({ t, isMobile }) {
   const data = [
     { id: 1, area: 100, bed: 3, bath: 2, dist: 5, price: 1500, edist: 27.00 },
     { id: 2, area: 120, bed: 4, bath: 3, dist: 10, price: 1700, edist: 7.21 },
@@ -493,9 +504,9 @@ function SectionRegression({ t }) {
 
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
         <VisualCard t={t} title="PERBEDAAN DENGAN CLASSIFICATION" accent={t.pink}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
             <div style={{ padding: 14, borderRadius: 12, background: `${t.blue}08`, border: `1px solid ${t.blue}20`, textAlign: "center" }}>
               <div style={{ fontSize: 24, marginBottom: 6 }}>🏷️</div>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 12, fontWeight: 700, color: t.blue }}>Classification</div>
@@ -524,7 +535,7 @@ function SectionRegression({ t }) {
         <div style={{ fontFamily: "'Nunito'", fontSize: 13, color: t.textMuted, marginBottom: 14 }}>
           Data baru: Luas 125m², 3 kamar, 4 bath, 15km dari pusat kota. Berapa harganya?
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr", gap: 16 }}>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
               <thead>
@@ -580,10 +591,10 @@ function SectionRegression({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: NORMALIZATION
 // ══════════════════════════════════════════
-function SectionNormalization({ t }) {
+function SectionNormalization({ t, isMobile }) {
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
         {/* Before normalization */}
         <VisualCard t={t} title="❌ TANPA NORMALISASI" accent={t.red}>
           <div style={{ fontFamily: "'Nunito'", fontSize: 13, color: t.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
@@ -673,10 +684,10 @@ function SectionNormalization({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: ENCODING
 // ══════════════════════════════════════════
-function SectionEncoding({ t }) {
+function SectionEncoding({ t, isMobile }) {
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         <VisualCard t={t} title="LABEL ENCODING" accent={t.orange}>
           <div style={{ fontFamily: "'Nunito'", fontSize: 13, color: t.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
             Setiap kategori diberi <span style={{ color: t.orange, fontWeight: 700 }}>angka urut</span>. Simple, tapi bisa bermasalah karena model bisa "mengira" ada urutan/jarak antar kategori.
@@ -741,7 +752,7 @@ function SectionEncoding({ t }) {
 
       <div style={{ marginTop: 16 }}>
         <VisualCard t={t} title="KAPAN PAKAI APA?" accent={t.accent}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 12 }}>
             {[
               { type: "Label Encoding", when: "Data ordinal (ada urutan)", ex: "Pendidikan: SMA=1, S1=2, S2=3, S3=4", color: t.orange },
               { type: "One-Hot Encoding", when: "Data nominal (tanpa urutan)", ex: "Genre: Action, Comedy, Drama → kolom terpisah", color: t.blue },
@@ -763,7 +774,7 @@ function SectionEncoding({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: CHOOSING K
 // ══════════════════════════════════════════
-function SectionChoosingK({ t }) {
+function SectionChoosingK({ t, isMobile }) {
   return (
     <div>
       <VisualCard t={t} title="EFEK NILAI K TERHADAP DECISION BOUNDARY" accent={t.accent}>
@@ -805,7 +816,7 @@ function SectionChoosingK({ t }) {
         </svg>
       </VisualCard>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginTop: 16 }}>
         <VisualCard t={t} title="HUBUNGAN K DAN BIAS-VARIANCE" accent={t.cyan}>
           <div style={{ display: "grid", gap: 8 }}>
             {[
@@ -848,7 +859,7 @@ function SectionChoosingK({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: EXERCISE
 // ══════════════════════════════════════════
-function SectionExercise({ t }) {
+function SectionExercise({ t, isMobile }) {
   const [encoding, setEncoding] = useState("onehot");
   const [showAnswer, setShowAnswer] = useState(false);
 
@@ -909,7 +920,7 @@ function SectionExercise({ t }) {
               </tbody>
             </table>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 14 }}>
             <div style={{ padding: 12, borderRadius: 12, background: `${t.green}08`, border: `1px solid ${t.green}25`, textAlign: "center" }}>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 10, fontWeight: 700, color: t.textMuted, letterSpacing: 1 }}>K=3</div>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 18, fontWeight: 800, color: t.green }}>Frequent Viewer</div>
@@ -963,7 +974,7 @@ function SectionExercise({ t }) {
               </tbody>
             </table>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginTop: 14 }}>
             <div style={{ padding: 12, borderRadius: 12, background: `${t.green}08`, border: `1px solid ${t.green}25`, textAlign: "center" }}>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 10, fontWeight: 700, color: t.textMuted, letterSpacing: 1 }}>K=3 (Manhattan)</div>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 16, fontWeight: 800, color: t.green }}>Frequent Viewer</div>
@@ -989,10 +1000,10 @@ function SectionExercise({ t }) {
 // ══════════════════════════════════════════
 //  SECTION: PROS & CONS
 // ══════════════════════════════════════════
-function SectionProsCons({ t }) {
+function SectionProsCons({ t, isMobile }) {
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
         <VisualCard t={t} title="✅ KELEBIHAN KNN" accent={t.green}>
           <div style={{ display: "grid", gap: 8 }}>
             {[
@@ -1027,7 +1038,7 @@ function SectionProsCons({ t }) {
       </div>
 
       <VisualCard t={t} title="KOMPLEKSITAS KOMPUTASI" accent={t.cyan}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: 10 }}>
           {[
             { label: "Hitung 1 jarak", formula: "O(d)", desc: "d = jumlah dimensi/fitur" },
             { label: "1 nearest neighbor", formula: "O(nd)", desc: "n = jumlah data training" },
@@ -1095,20 +1106,21 @@ function SectionProsCons({ t }) {
 export default function App() {
   const [theme, setTheme] = useState("light");
   const [activeSection, setActiveSection] = useState("overview");
+  const isMobile = useIsMobile();
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
   const t = THEMES[theme];
 
   const renderSection = () => {
     switch (activeSection) {
-      case "overview": return <SectionOverview t={t} />;
-      case "distance": return <SectionDistance t={t} />;
-      case "classification": return <SectionClassification t={t} />;
-      case "regression": return <SectionRegression t={t} />;
-      case "normalization": return <SectionNormalization t={t} />;
-      case "encoding": return <SectionEncoding t={t} />;
-      case "choosing_k": return <SectionChoosingK t={t} />;
-      case "exercise": return <SectionExercise t={t} />;
-      case "proscons": return <SectionProsCons t={t} />;
+      case "overview": return <SectionOverview t={t} isMobile={isMobile} />;
+      case "distance": return <SectionDistance t={t} isMobile={isMobile} />;
+      case "classification": return <SectionClassification t={t} isMobile={isMobile} />;
+      case "regression": return <SectionRegression t={t} isMobile={isMobile} />;
+      case "normalization": return <SectionNormalization t={t} isMobile={isMobile} />;
+      case "encoding": return <SectionEncoding t={t} isMobile={isMobile} />;
+      case "choosing_k": return <SectionChoosingK t={t} isMobile={isMobile} />;
+      case "exercise": return <SectionExercise t={t} isMobile={isMobile} />;
+      case "proscons": return <SectionProsCons t={t} isMobile={isMobile} />;
       default: return null;
     }
   };
@@ -1120,6 +1132,7 @@ export default function App() {
       minHeight: "100vh", background: t.bg, color: t.text,
       fontFamily: "'Nunito', sans-serif",
       transition: `background 0.5s ${ease}, color 0.3s ${ease}`,
+      overflowX: "hidden",
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');

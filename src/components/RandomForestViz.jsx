@@ -4,6 +4,17 @@ import { useState, useEffect, useRef } from "react";
 // RANDOM FORESTS — MATERI 8 VISUALIZATION
 // ═══════════════════════════════════════════
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const SECTIONS = [
   { id: "cart", label: "CART Recap", icon: "🌳" },
   { id: "ensemble", label: "Ensemble Learning", icon: "🎭" },
@@ -565,7 +576,7 @@ function EnsembleSection({ dark }) {
   );
 }
 
-function RFSection({ dark }) {
+function RFSection({ dark, isMobile }) {
   const bg = dark ? "rgba(30,41,59,0.4)" : "rgba(241,245,249,0.6)";
   const border = dark ? "rgba(71,85,105,0.4)" : "rgba(203,213,225,0.4)";
   const text = dark ? "#e2e8f0" : "#1e293b";
@@ -618,7 +629,7 @@ function RFSection({ dark }) {
       {/* Hyperparameters */}
       <div style={{ background: bg, borderRadius: 16, padding: 24, border: `1px solid ${border}` }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: text, marginBottom: 16 }}>⚙️ Hyperparameters Random Forest</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
           {[
             { name: "n_estimators", desc: "Jumlah tree dalam forest", icon: "🌲", importance: "high" },
             { name: "max_samples", desc: "Ukuran bootstrap sample per tree", icon: "📦", importance: "medium" },
@@ -749,6 +760,7 @@ function PerfSection({ dark }) {
 // ═══════════════ MAIN APP ═══════════════
 
 export default function RandomForestViz() {
+  const isMobile = useIsMobile();
   const [dark, setDark] = useState(false);
   const [activeSection, setActiveSection] = useState("cart");
   try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(SECTIONS.map(s=>s.id),activeSection,setActiveSection);}catch{}
@@ -763,7 +775,7 @@ export default function RandomForestViz() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: theme.bg, color: theme.text, fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", position: "relative", overflow: "hidden", transition: "background 0.4s" }}>
+    <div style={{ minHeight: "100vh", background: theme.bg, color: theme.text, fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", position: "relative", overflow: "hidden", overflowX: "hidden", transition: "background 0.4s" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap');
         @keyframes popIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
@@ -821,7 +833,7 @@ export default function RandomForestViz() {
         <main style={{ animation: "fadeUp 0.5s both" }} key={activeSection}>
           {activeSection === "cart" && <CartSection dark={dark} />}
           {activeSection === "ensemble" && <EnsembleSection dark={dark} />}
-          {activeSection === "rf" && <RFSection dark={dark} />}
+          {activeSection === "rf" && <RFSection dark={dark} isMobile={isMobile} />}
           {activeSection === "perf" && <PerfSection dark={dark} />}
         </main>
 

@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 // ======================== DATA ========================
 
 const TOPICS = [
@@ -423,6 +434,7 @@ function App(){
   const [eo,setEo]=useState(null);
 
   const T=dark?themes.dark:themes.light;
+  const isMobile=useIsMobile();
   const q=QUESTIONS[qi];
   const D=T.mode==="dark";
   const weeks=[...new Set(TOPICS.map(t=>t.week))];
@@ -436,7 +448,7 @@ function App(){
   const Lbl=({c,children})=><div style={{fontFamily:F.mono,fontSize:9,fontWeight:700,color:c||T.text4,letterSpacing:2.5,textTransform:"uppercase",marginBottom:12}}>{children}</div>;
 
   return(
-    <div style={{minHeight:"100vh",background:T.bg,color:T.text,fontFamily:F.ui,transition:"background 0.5s,color 0.5s"}}>
+    <div style={{minHeight:"100vh",background:T.bg,color:T.text,fontFamily:F.ui,transition:"background 0.5s,color 0.5s",overflowX:"hidden"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
@@ -523,7 +535,7 @@ function App(){
                     <span style={{fontFamily:F.mono,fontSize:10,color:T.text4,letterSpacing:2}}>WEEK {w}</span>
                     <div style={{flex:1,height:1,background:`linear-gradient(90deg,${T.border},transparent)`}}/>
                   </div>
-                  <div style={{display:"grid",gridTemplateColumns:wt.length>1?"1fr 1fr":"1fr",gap:8}}>
+                  <div style={{display:"grid",gridTemplateColumns:wt.length>1&&!isMobile?"1fr 1fr":"1fr",gap:8}}>
                     {wt.map((t,i)=>(
                       <div key={t.id} onClick={()=>{setSel(t);setOpenSub(null)}}
                         style={{

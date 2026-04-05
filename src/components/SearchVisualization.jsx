@@ -16,7 +16,19 @@ function runAStar(s,g){const st=[];const pq=[{c:s,p:[s],g:0,h:CITIES[s].h,f:CITI
 
 const ALGOS={"BFS":runBFS,"DFS":runDFS,"UCS":runUCS,"GBFS":runGBFS,"A*":runAStar};
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 export default function App(){
+const isMobile=useIsMobile();
 const[dk,setDk]=useState(false);
 const[tab,setTab]=useState("overview");
 try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["overview","concepts","uninformed","informed","sim","compare"],tab,setTab);}catch{}
@@ -35,7 +47,7 @@ const Box=({children,s})=><div style={{background:T.card,border:`1px solid ${T.b
 const Tag=({children,c})=><span style={{display:"inline-block",padding:"2px 9px",borderRadius:6,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",background:`${c||T.bl}14`,color:c||T.bl,border:`1px solid ${c||T.bl}28`}}>{children}</span>;
 const H=({em,children})=><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}><span style={{fontSize:26}}>{em}</span><h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:28,color:T.tx,fontWeight:600,margin:0}}>{children}</h2></div>;
 const Why=({children})=><div style={{background:`${T.pr}0a`,border:`1px solid ${T.pr}20`,borderRadius:10,padding:"12px 16px",margin:"12px 0",borderLeft:`3px solid ${T.pr}`}}><div style={{fontFamily:"monospace",fontSize:10,color:T.pr,fontWeight:700,letterSpacing:1.5,marginBottom:6}}>💡 KENAPA?</div><div style={{fontSize:13,color:T.tx,lineHeight:1.75}}>{children}</div></div>;
-const Props=({items})=><div style={{display:"grid",gridTemplateColumns:`repeat(${items.length},1fr)`,gap:6,marginTop:12}}>{items.map((p,i)=><div key={i} style={{background:T.code,borderRadius:8,padding:10,textAlign:"center"}}><div style={{fontSize:9,color:T.sub}}>{p.l}</div><div style={{fontSize:13,fontWeight:700,color:p.c,fontFamily:"monospace",margin:"4px 0"}}>{p.v}</div><div style={{fontSize:9,color:T.sub,lineHeight:1.3}}>{p.n}</div></div>)}</div>;
+const Props=({items})=><div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":`repeat(${items.length},1fr)`,gap:6,marginTop:12}}>{items.map((p,i)=><div key={i} style={{background:T.code,borderRadius:8,padding:10,textAlign:"center"}}><div style={{fontSize:9,color:T.sub}}>{p.l}</div><div style={{fontSize:13,fontWeight:700,color:p.c,fontFamily:"monospace",margin:"4px 0"}}>{p.v}</div><div style={{fontSize:9,color:T.sub,lineHeight:1.3}}>{p.n}</div></div>)}</div>;
 
 const RMap=({cur:c,path,exp,showH})=>{
   const ps=new Set(path||[]),es=new Set(exp||[]),pe=[];
@@ -80,7 +92,7 @@ const OverviewTab=()=><div>
       Bayangkan kamu tersesat di kota asing. <strong style={{color:T.tx}}>Uninformed search</strong> = jalan tanpa peta. <strong style={{color:T.tx}}>Informed search</strong> = punya GPS dengan estimasi jarak.
     </p>
   </div>
-  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
+  <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(3,1fr)",gap:12,marginBottom:24}}>
     {[{em:"🤖",t:"Problem-Solving Agent",d:"Agent yang punya goal & merencanakan aksi lewat search",c:T.bl},{em:"🗺",t:"State Space",d:"Semua kemungkinan keadaan direpresentasikan sbg graph",c:T.gn},{em:"🔍",t:"Search Strategy",d:"Cara memilih node mana yang di-expand duluan — inti perbedaan",c:T.am}].map((x,i)=>
       <Box key={i} s={{borderTop:`3px solid ${x.c}`,textAlign:"center",padding:24}}><div style={{fontSize:32,marginBottom:8}}>{x.em}</div><div style={{fontSize:14,fontWeight:700,color:T.tx,marginBottom:6}}>{x.t}</div><div style={{fontSize:12,color:T.sub,lineHeight:1.6}}>{x.d}</div></Box>)}
   </div>
@@ -91,7 +103,7 @@ const OverviewTab=()=><div>
   </Box>
   <Box>
     <div style={{fontFamily:"monospace",fontSize:10,color:T.am,letterSpacing:2,marginBottom:12}}>ASUMSI LINGKUNGAN</div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(4,1fr)",gap:10}}>
       {[{em:"👁",t:"Fully Observable",d:"Agent lihat seluruh peta"},{em:"🎯",t:"Deterministic",d:"Aksi pasti hasilnya sesuai prediksi"},{em:"⏸",t:"Static",d:"Peta tak berubah saat berpikir"},{em:"🔢",t:"Discrete",d:"State & aksi terbatas"}].map((a,i)=>
         <div key={i} style={{background:T.code,borderRadius:10,padding:14,textAlign:"center"}}><div style={{fontSize:22,marginBottom:6}}>{a.em}</div><div style={{fontSize:11,fontWeight:700,color:T.tx,marginBottom:3}}>{a.t}</div><div style={{fontSize:10,color:T.sub,lineHeight:1.4}}>{a.d}</div></div>)}
     </div>
@@ -111,7 +123,7 @@ const ConceptsTab=()=><div>
   <Box s={{marginBottom:16}}>
     <div style={{fontFamily:"monospace",fontSize:10,color:T.bl,letterSpacing:2,marginBottom:16}}>STATE SPACE — 5 KOMPONEN WAJIB</div>
     <p style={{fontSize:13,color:T.sub,lineHeight:1.7,marginBottom:14}}>State space = <strong style={{color:T.tx}}>peta lengkap semua kemungkinan</strong>. Dimodelkan sebagai <strong style={{color:T.tx}}>graph</strong>: node=state, edge=aksi, weight=biaya.</p>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:10}}>
       {[{em:"📍",t:"States",d:"Semua keadaan yang mungkin",ex:"LocatedIn(Arad), LocatedIn(Sibiu), ...",c:T.bl,w:"Semua titik di peta yang bisa dikunjungi"},
         {em:"🚩",t:"S_init",d:"Titik awal — sebelum aksi pertama",ex:"S_init = LocatedIn(Arad)",c:T.gn,w:"Di mana kamu SEKARANG?"},
         {em:"🎬",t:"PosAct(s)",d:"Aksi yang tersedia di state s",ex:"PosAct(Arad) = {DriveTo(Sibiu), DriveTo(Tim), DriveTo(Zer)}",c:T.am,w:"Dari sini, ke mana saja kamu BISA pergi?"},
@@ -135,7 +147,7 @@ const ConceptsTab=()=><div>
   </Box>
   <Box>
     <div style={{fontFamily:"monospace",fontSize:10,color:T.cy,letterSpacing:2,marginBottom:14}}>FRONTIER & EXPLORED — JANTUNG SEARCH</div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:12}}>
       <div style={{background:T.code,borderRadius:10,padding:16}}>
         <div style={{fontSize:14,fontWeight:700,color:T.bl,marginBottom:8}}>📦 Frontier</div>
         <div style={{fontSize:12,color:T.sub,lineHeight:1.7,marginBottom:10}}>Node yang <strong style={{color:T.tx}}>menunggu giliran</strong> di-expand. <strong style={{color:T.bl}}>Data structure frontier = strategi search!</strong></div>
@@ -205,7 +217,7 @@ const InformedTab=()=><div>
     <Why>SLD bagus karena <strong>garis lurus SELALU ≤ jarak jalan sebenarnya</strong>. Jadi SLD tak pernah "menipu" — ini disebut <strong style={{color:T.gn}}>admissible</strong>.</Why>
   </Box>
 
-  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+  <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:12,marginBottom:16}}>
     <Box s={{borderTop:`3px solid ${T.gn}`}}>
       <div style={{fontSize:14,fontWeight:700,color:T.gn,marginBottom:8}}>✅ Admissible</div>
       <div style={{fontFamily:"monospace",fontSize:15,color:T.tx,textAlign:"center",padding:"12px 0",background:T.code,borderRadius:8,marginBottom:10}}>0 ≤ h(n) ≤ h*(n)</div>
@@ -260,7 +272,7 @@ const SimTab=()=><div>
       <div style={{fontSize:14,color:cur.ph==="goal"?T.gn:T.tx,fontWeight:600}}>{cur.msg||"Pilih algoritma & tekan Play"}</div>
       {cur.path&&<div style={{fontFamily:"monospace",fontSize:11,color:T.bl,marginTop:8}}>Path: {cur.path.join(" → ")}{cur.cost!=null&&<span style={{color:T.am}}> (cost: {cur.cost})</span>}</div>}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:10}}>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8,marginTop:10}}>
       {[{l:"FRONTIER",c:T.bl,d:cur.f},{l:"EXPLORED",c:T.gn,d:cur.exp}].map((x,i)=><div key={i} style={{background:T.code,borderRadius:8,padding:10}}>
         <div style={{fontFamily:"monospace",fontSize:9,color:x.c,marginBottom:4}}>{x.l} ({(x.d||[]).length})</div>
         <div style={{fontFamily:"monospace",fontSize:9,color:T.sub,lineHeight:1.8,maxHeight:90,overflow:"auto",wordBreak:"break-all"}}>{(x.d||[]).join(", ")||"empty"}</div>
@@ -279,14 +291,14 @@ const CompareTab=()=><div>
   </Box>
   <Box s={{marginBottom:16}}>
     <div style={{fontFamily:"monospace",fontSize:10,color:T.am,letterSpacing:2,marginBottom:12}}>KAPAN PAKAI APA?</div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:8}}>
       {[{a:"BFS",w:"Step cost sama, goal dangkal",em:"📋",c:T.bl},{a:"DFS",w:"Memori terbatas, banyak solusi",em:"📚",c:T.rd},{a:"UCS",w:"Cost beda, butuh optimal",em:"⚖️",c:T.am},{a:"IDS",w:"Space besar, depth unknown — BEST blind!",em:"🔄",c:T.gn},{a:"GBFS",w:"Butuh cepat, optimal ga penting",em:"🏃",c:T.pr},{a:"A*",w:"Butuh optimal + heuristic bagus — BEST!",em:"⭐",c:T.bl}].map((x,i)=>
         <div key={i} style={{background:T.code,borderRadius:8,padding:12}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}><span style={{fontSize:16}}>{x.em}</span><span style={{fontFamily:"monospace",fontSize:12,fontWeight:700,color:x.c}}>{x.a}</span></div><div style={{fontSize:11,color:T.sub,lineHeight:1.5}}>{x.w}</div></div>)}
     </div>
   </Box>
   <Box s={{marginBottom:16}}>
     <div style={{fontFamily:"monospace",fontSize:10,color:T.pr,letterSpacing:2,marginBottom:12}}>RUMUS PENTING</div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8}}>
       {[{f:"f(n) = g(n) + h(n)",d:"A*: total estimated cost",c:T.bl},{f:"0 ≤ h(n) ≤ h*(n)",d:"Admissible: never overestimate",c:T.gn},{f:"h(n) ≤ c(n,a,n') + h(n')",d:"Consistent: triangle inequality",c:T.cy},{f:"PathCost = Σ ActCost",d:"Total biaya sepanjang path",c:T.am}].map((r,i)=>
         <div key={i} style={{background:T.code,borderRadius:8,padding:12,borderLeft:`3px solid ${r.c}`}}><div style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:r.c,marginBottom:4}}>{r.f}</div><div style={{fontSize:11,color:T.sub}}>{r.d}</div></div>)}
     </div>
@@ -304,7 +316,7 @@ const CompareTab=()=><div>
 const TABS=[{id:"overview",l:"Overview",e:"🗺"},{id:"concepts",l:"Konsep",e:"🧩"},{id:"uninformed",l:"Uninformed",e:"🔍"},{id:"informed",l:"Informed",e:"🧠"},{id:"sim",l:"Simulator",e:"🎮"},{id:"compare",l:"Rangkuman",e:"📊"}];
 const tabs={overview:<OverviewTab/>,concepts:<ConceptsTab/>,uninformed:<UninformedTab/>,informed:<InformedTab/>,sim:<SimTab/>,compare:<CompareTab/>};
 
-return <div style={{minHeight:"100vh",background:T.bg,color:T.tx,fontFamily:"system-ui,-apple-system,sans-serif",transition:"background 0.3s,color 0.3s"}}>
+return <div style={{minHeight:"100vh",background:T.bg,color:T.tx,fontFamily:"system-ui,-apple-system,sans-serif",transition:"background 0.3s,color 0.3s",overflowX:"hidden"}}>
   <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:${T.bdr};border-radius:3px}button:hover{filter:brightness(1.1)}strong{color:${T.tx}}`}</style>
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 20px",borderBottom:`1px solid ${T.bdr}`,position:"sticky",top:0,zIndex:100,background:`${T.bg}ee`,backdropFilter:"blur(16px)"}}>
     <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontWeight:700}}>🔍 Search</span><Tag c={T.bl}>Materi 02</Tag></div>

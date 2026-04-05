@@ -37,6 +37,17 @@ const themes = {
   },
 };
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 // ============ ANIMATED NUMBER ============
 function AnimNum({ value, duration = 800, decimals = 0, suffix = "" }) {
   const [display, setDisplay] = useState(0);
@@ -59,7 +70,7 @@ function AnimNum({ value, duration = 800, decimals = 0, suffix = "" }) {
 }
 
 // ============ INTERACTIVE CONFUSION MATRIX ============
-function InteractiveConfusionMatrix({ t }) {
+function InteractiveConfusionMatrix({ t, isMobile }) {
   const [tp, setTp] = useState(50);
   const [fn, setFn] = useState(10);
   const [fp, setFp] = useState(5);
@@ -91,7 +102,7 @@ function InteractiveConfusionMatrix({ t }) {
 
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, marginBottom: 20 }}>
         {/* Matrix Visual */}
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "auto 1fr 1fr", gridTemplateRows: "auto 1fr 1fr", gap: 3 }}>
@@ -376,7 +387,7 @@ function CVVisual({ t }) {
 }
 
 // ============ F1 DEEP DIVE ============
-function F1DeepDive({ t }) {
+function F1DeepDive({ t, isMobile }) {
   const [prec, setPrec] = useState(60);
   const [rec, setRec] = useState(80);
   const [beta, setBeta] = useState(1);
@@ -387,7 +398,7 @@ function F1DeepDive({ t }) {
 
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 16 }}>
         <div>
           <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: t.textMuted, marginBottom: 6 }}>Precision: <strong style={{ color: t.purple }}>{prec}%</strong></div>
           <input type="range" min={1} max={99} value={prec} onChange={e => setPrec(+e.target.value)} style={{ width: "100%", accentColor: t.purple }} />
@@ -432,7 +443,7 @@ function F1DeepDive({ t }) {
 }
 
 // ============ MULTICLASS VISUAL ============
-function MulticlassVisual({ t }) {
+function MulticlassVisual({ t, isMobile }) {
   const cm = [[4, 6, 3], [1, 2, 0], [1, 2, 6]];
   const classes = ["Cat 🐱", "Fish 🐟", "Hen 🐔"];
 
@@ -573,6 +584,7 @@ function MetricChooser({ t }) {
 export default function ModelEvaluationViz() {
   const [isDark, setIsDark] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
+  const isMobile = useIsMobile();
   const t = isDark ? themes.dark : themes.light;
 
   const Card = ({ children, style = {}, accent = null }) => (
@@ -615,7 +627,7 @@ export default function ModelEvaluationViz() {
             <SectionTitle icon="🗺️" title="Supervised Model Evaluation" subtitle="Bagaimana mengevaluasi model ML dengan tepat?" />
             <Card accent={t.accent}>
               <div style={{ fontFamily: "'Outfit'", fontSize: 14, fontWeight: 700, color: t.accent, marginBottom: 12, letterSpacing: 1 }}>DUA MASALAH UTAMA</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
                 <div style={{ padding: 16, borderRadius: 12, background: `${t.blue}08`, border: `1px solid ${t.blue}20` }}>
                   <div style={{ fontFamily: "'Outfit'", fontSize: 16, fontWeight: 700, color: t.blue, marginBottom: 6 }}>1. Methodology</div>
                   <div style={{ fontFamily: "'Crimson Pro'", fontSize: 13, color: t.textMuted, lineHeight: 1.6 }}>
@@ -673,7 +685,7 @@ export default function ModelEvaluationViz() {
             </Card>
             <Card accent={t.purple}>
               <div style={{ fontFamily: "'Outfit'", fontSize: 14, fontWeight: 700, color: t.purple, marginBottom: 10 }}>Nilai K — Trade-off</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                 <div style={{ padding: 12, borderRadius: 10, background: `${t.blue}08`, border: `1px solid ${t.blue}20` }}>
                   <div style={{ fontFamily: "'Outfit'", fontSize: 12, fontWeight: 700, color: t.blue }}>K Besar</div>
                   <KeyPoint emoji="✅" text="Bias kecil (estimasi error akurat)" />
@@ -720,11 +732,11 @@ export default function ModelEvaluationViz() {
           <>
             <SectionTitle icon="🎯" title="Confusion Matrix" subtitle="Geser slider untuk eksplorasi bagaimana TP, FP, FN, TN mempengaruhi semua metrik" />
             <Card accent={t.accent}>
-              <InteractiveConfusionMatrix t={t} />
+              <InteractiveConfusionMatrix t={t} isMobile={isMobile} />
             </Card>
             <Card accent={t.purple}>
               <div style={{ fontFamily: "'Outfit'", fontSize: 14, fontWeight: 700, color: t.purple, marginBottom: 10 }}>Cara Baca (dengan Analogi)</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8 }}>
                 {[
                   { term: "TP", icon: "✅", desc: "Dibilang sakit, memang sakit", color: t.correct },
                   { term: "FP", icon: "🚨", desc: "Dibilang sakit, padahal sehat (false alarm)", color: t.wrong },
@@ -779,11 +791,11 @@ export default function ModelEvaluationViz() {
           <>
             <SectionTitle icon="🔥" title="F1-Score & F-Beta" subtitle="Harmonic mean — kenapa lebih baik dari simple mean?" />
             <Card accent={t.pink}>
-              <F1DeepDive t={t} />
+              <F1DeepDive t={t} isMobile={isMobile} />
             </Card>
             <Card accent={t.cyan}>
               <div style={{ fontFamily: "'Outfit'", fontSize: 14, fontWeight: 700, color: t.cyan, marginBottom: 10 }}>F-Beta Cheat Sheet</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 8 }}>
                 {[
                   { beta: "β < 1", metric: "F0.5", focus: "Precision ↑", example: "Spam filter — jangan hapus email penting!", color: t.purple },
                   { beta: "β = 1", metric: "F1", focus: "Seimbang", example: "Default jika FP = FN sama-sama costly", color: t.pink },
@@ -829,7 +841,7 @@ export default function ModelEvaluationViz() {
           <>
             <SectionTitle icon="🎨" title="Multiclass Classification" subtitle="Macro vs Micro averaging — cara menghitung F1 untuk >2 kelas" />
             <Card accent={t.purple}>
-              <MulticlassVisual t={t} />
+              <MulticlassVisual t={t} isMobile={isMobile} />
             </Card>
             <Card accent={t.green}>
               <div style={{ fontFamily: "'Outfit'", fontSize: 14, fontWeight: 700, color: t.green, marginBottom: 10 }}>OvR — One vs Rest</div>
@@ -892,20 +904,11 @@ export default function ModelEvaluationViz() {
     }
   };
 
-  // Mobile detection
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 640);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   // Register tabs for swipe navigation
   try { const { useTabSwipe } = require("@/lib/SwipeNavigationContext"); useTabSwipe(SECTIONS.map(s => s.id), activeSection, setActiveSection); } catch {}
 
   return (
-    <div style={{ fontFamily: "'Outfit', sans-serif", background: t.bg, minHeight: "100vh", color: t.text, transition: "all 0.3s" }}>
+    <div style={{ fontFamily: "'Outfit', sans-serif", background: t.bg, minHeight: "100vh", color: t.text, transition: "all 0.3s", overflowX: "hidden" }}>
       <style>{FONTS}{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         * { box-sizing: border-box; margin: 0; padding: 0; }
