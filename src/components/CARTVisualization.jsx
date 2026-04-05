@@ -341,6 +341,8 @@ function AlgorithmSection({ t, isMobile }) {
 // ========== SECTION: COST FUNCTIONS ==========
 function CostSection({ t, isMobile }) {
   const [tab, setTab] = useState("gini");
+  const [showCalcGini, setShowCalcGini] = useState(false);
+  const [showCalcEntropy, setShowCalcEntropy] = useState(false);
   return (
     <div>
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
@@ -401,6 +403,34 @@ function CostSection({ t, isMobile }) {
             </div>
             <div style={{ fontSize: 12, color: t.textMuted, marginTop: 4 }}>n₁, n₂ = jumlah data di tiap anak, N = total data di parent</div>
           </div>
+
+          <div style={{ textAlign: "center" }}>
+            <button onClick={() => setShowCalcGini(!showCalcGini)} style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 11, fontWeight: 700, marginTop: 12, background: showCalcGini ? `${t.accent}20` : `${t.textDim}15`, color: showCalcGini ? t.accent : t.textMuted }}>
+              {showCalcGini ? "✕ Tutup Hitungan" : "📐 Lihat Hitungan"}
+            </button>
+          </div>
+          {showCalcGini && (
+            <div style={{ background: `${t.accent}08`, borderRadius: 12, padding: "16px 20px", marginTop: 12, border: `1px solid ${t.accent}20`, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted, lineHeight: 1.8 }}>
+              <div style={{ fontWeight: 700, color: t.accent, marginBottom: 8, fontSize: 13 }}>Contoh: Node dengan 3 Iya + 1 Tidak (4 data)</div>
+              <div>Kelas "Iya": p₁ = 3/4 = 0.75</div>
+              <div>Kelas "Tidak": p₂ = 1/4 = 0.25</div>
+              <div style={{ marginTop: 6, color: t.accent, fontWeight: 600 }}>
+                𝒢 = 1 - (p₁² + p₂²)
+              </div>
+              <div>{"  "}= 1 - (0.75² + 0.25²)</div>
+              <div>{"  "}= 1 - (0.5625 + 0.0625)</div>
+              <div>{"  "}= 1 - 0.625 = <strong style={{ color: t.text }}>0.375</strong></div>
+              <div style={{ marginTop: 10, fontWeight: 700, color: t.accent, fontSize: 13 }}>Contoh Cost Split</div>
+              <div style={{ marginTop: 4 }}>Parent: 7 data. Split "Suka Soda":</div>
+              <div>{"  "}Anak 1 (Iya): 4 data → 3 Iya + 1 Tidak → 𝒢₁ = 0.375</div>
+              <div>{"  "}Anak 2 (Tidak): 3 data → 0 Iya + 3 Tidak → 𝒢₂ = 0</div>
+              <div style={{ marginTop: 4, color: t.accent, fontWeight: 600 }}>
+                cost = (4/7) × 0.375 + (3/7) × 0
+              </div>
+              <div>{"     "}= 0.571 × 0.375 + 0</div>
+              <div>{"     "}= <strong style={{ color: t.text }}>0.214</strong></div>
+            </div>
+          )}
         </div>
       )}
       
