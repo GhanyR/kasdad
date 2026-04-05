@@ -88,12 +88,14 @@ function IQRDemo({t}){
 }
 
 function BoxPlotSVG({t}){
+  const [showCalc, setShowCalc] = useState(false);
   const W=460,H=150,pad=50,y=60;
   const min=2.78,q1=4.045,med=6.595,q3=9.01,mx=17.11;
   const iqr=q3-q1;const rlb=q1-1.5*iqr;const rub=q3+1.5*iqr;
   const lo=Math.min(rlb,min)-1,hi=Math.max(rub,mx)+2;
   const sc=v=>pad+((v-lo)/(hi-lo))*(W-pad*2);
   return(
+    <div>
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%"}}>
       <line x1={sc(min)} y1={y} x2={sc(q1)} y2={y} stroke={t.g} strokeWidth={2}/>
       <line x1={sc(q3)} y1={y} x2={sc(rub)} y2={y} stroke={t.g} strokeWidth={2}/>
@@ -111,6 +113,38 @@ function BoxPlotSVG({t}){
       <line x1={sc(q3)} y1={y-36} x2={sc(q3)} y2={y-28} stroke={t.p} strokeWidth={1.5}/>
       <text x={sc((q1+q3)/2)} y={y-38} textAnchor="middle" fill={t.p} fontSize={10} fontFamily="'Geist Mono'" fontWeight={600}>IQR = {iqr.toFixed(2)}</text>
     </svg>
+    <div style={{textAlign:"center"}}>
+      <button onClick={()=>setShowCalc(!showCalc)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,marginTop:12,background:showCalc?`${t.p}20`:`${t.tx3}15`,color:showCalc?t.p:t.tx2}}>
+        {showCalc?"✕ Tutup Hitungan":"📐 Lihat Hitungan"}
+      </button>
+    </div>
+    {showCalc&&(
+      <div style={{background:`${t.p}08`,borderRadius:12,padding:"16px 20px",marginTop:12,border:`1px solid ${t.p}20`,fontFamily:"'Geist Mono'",fontSize:12,color:t.tx2,lineHeight:1.8}}>
+        <div style={{fontWeight:700,color:t.p,marginBottom:8,fontSize:13}}>Cara Hitung Q1, Q3, IQR</div>
+        <div>Data (sudah diurutkan): {min}, {q1}, ..., {med}, ..., {q3}, ..., {mx}</div>
+        <div>n = jumlah data</div>
+        <div style={{marginTop:6}}>
+          <span style={{color:t.g,fontWeight:600}}>Q1</span> = nilai pada posisi 25% = <strong style={{color:t.g}}>{q1}</strong>
+        </div>
+        <div>
+          <span style={{color:t.y,fontWeight:600}}>Q2 (Median)</span> = nilai pada posisi 50% = <strong style={{color:t.y}}>{med}</strong>
+        </div>
+        <div>
+          <span style={{color:t.g,fontWeight:600}}>Q3</span> = nilai pada posisi 75% = <strong style={{color:t.g}}>{q3}</strong>
+        </div>
+        <div style={{marginTop:6,color:t.p,fontWeight:600}}>
+          IQR = Q3 - Q1 = {q3} - {q1} = <strong>{iqr.toFixed(2)}</strong>
+        </div>
+        <div style={{marginTop:6}}>
+          <span style={{color:t.o,fontWeight:600}}>RUB</span> (Right Upper Bound) = Q3 + 1.5 * IQR = {q3} + 1.5 * {iqr.toFixed(2)} = <strong style={{color:t.o}}>{rub.toFixed(2)}</strong>
+        </div>
+        <div>
+          <span style={{color:t.b,fontWeight:600}}>RLB</span> (Left Lower Bound) = Q1 - 1.5 * IQR = {q1} - 1.5 * {iqr.toFixed(2)} = <strong style={{color:t.b}}>{rlb.toFixed(2)}</strong>
+        </div>
+        <div style={{marginTop:6}}>Nilai di luar [{rlb.toFixed(2)}, {rub.toFixed(2)}] = <span style={{color:t.r,fontWeight:600}}>Outlier</span> (contoh: {mx})</div>
+      </div>
+    )}
+    </div>
   );
 }
 
@@ -143,6 +177,7 @@ function CorrSVG({t}){
 }
 
 function NormDemo({t}){
+  const [showCalc, setShowCalc] = useState(false);
   const raw=[2,5,10,15,20];const mx=20,mn=2;
   const mean=raw.reduce((a,b)=>a+b)/raw.length;
   const std=Math.sqrt(raw.reduce((a,b)=>a+(b-mean)**2,0)/raw.length);
@@ -152,6 +187,7 @@ function NormDemo({t}){
     {name:"Min-Max",vals:raw.map(v=>+((v-mn)/(mx-mn)).toFixed(3)),formula:"(x−min)/(max−min)",c:t.b},
     {name:"Z-Score",vals:raw.map(v=>+((v-mean)/std).toFixed(3)),formula:"(x−μ)/σ",c:t.p},
   ];
+  const exVal=10;
   return(
     <div style={{display:"grid",gap:8}}>
       {methods.map((m,mi)=>(
@@ -174,6 +210,30 @@ function NormDemo({t}){
           </div>
         </div>
       ))}
+      <div style={{textAlign:"center"}}>
+        <button onClick={()=>setShowCalc(!showCalc)} style={{padding:"6px 14px",borderRadius:20,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,marginTop:12,background:showCalc?`${t.b}20`:`${t.tx3}15`,color:showCalc?t.b:t.tx2}}>
+          {showCalc?"✕ Tutup Hitungan":"📐 Lihat Hitungan"}
+        </button>
+      </div>
+      {showCalc&&(
+        <div style={{background:`${t.b}08`,borderRadius:12,padding:"16px 20px",marginTop:4,border:`1px solid ${t.b}20`,fontFamily:"'Geist Mono'",fontSize:12,color:t.tx2,lineHeight:1.8}}>
+          <div style={{fontWeight:700,color:t.b,marginBottom:8,fontSize:13}}>Contoh Hitungan (x = {exVal})</div>
+          <div>Data: [{raw.join(", ")}]</div>
+          <div>min = {mn}, max = {mx}, mean ({"\u03BC"}) = {mean.toFixed(2)}, std ({"\u03C3"}) = {std.toFixed(2)}</div>
+          <div style={{marginTop:8}}>
+            <span style={{color:t.g,fontWeight:600}}>Simple Scaling:</span>{" "}
+            x / x_max = {exVal} / {mx} = <strong style={{color:t.g}}>{(exVal/mx).toFixed(3)}</strong>
+          </div>
+          <div style={{marginTop:4}}>
+            <span style={{color:t.b,fontWeight:600}}>Min-Max:</span>{" "}
+            (x - min) / (max - min) = ({exVal} - {mn}) / ({mx} - {mn}) = {exVal-mn} / {mx-mn} = <strong style={{color:t.b}}>{((exVal-mn)/(mx-mn)).toFixed(3)}</strong>
+          </div>
+          <div style={{marginTop:4}}>
+            <span style={{color:t.p,fontWeight:600}}>Z-Score:</span>{" "}
+            (x - {"\u03BC"}) / {"\u03C3"} = ({exVal} - {mean.toFixed(2)}) / {std.toFixed(2)} = {(exVal-mean).toFixed(2)} / {std.toFixed(2)} = <strong style={{color:t.p}}>{((exVal-mean)/std).toFixed(3)}</strong>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
