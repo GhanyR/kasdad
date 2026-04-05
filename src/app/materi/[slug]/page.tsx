@@ -19,6 +19,7 @@ const COMPONENT_MAP: Record<string, ReturnType<typeof dynamic>> = {
   "bias-variance": dynamic(() => import("@/components/BiasVariance"), { ssr: false, loading: () => <Loading /> }),
   knn: dynamic(() => import("@/components/KNNVisualization"), { ssr: false, loading: () => <Loading /> }),
   imbalanced: dynamic(() => import("@/components/ImbalancedClassification"), { ssr: false, loading: () => <Loading /> }),
+  "naive-bayes": dynamic(() => import("@/components/NaiveBayesViz"), { ssr: false, loading: () => <Loading /> }),
   "uts-guide": dynamic(() => import("@/components/UTSGuide"), { ssr: false, loading: () => <Loading /> }),
   "uts-practice": dynamic(() => import("@/components/UTSPractice"), { ssr: false, loading: () => <Loading /> }),
 };

@@ -144,6 +144,17 @@ export const MATERIALS: Material[] = [
     category: "evaluation",
   },
   {
+    slug: "naive-bayes",
+    week: 7,
+    title: "Probability & Naive Bayes",
+    subtitle: "Bayes Theorem, Likelihood, Naive Bayes Classifier",
+    icon: "🎲",
+    color: "#8b5cf6",
+    gradient: "from-violet-500/20 to-purple-600/20",
+    topics: ["Probability Review", "Conditional Probability", "Bayes Theorem", "Likelihood", "Naive Bayes Classifier", "Laplace Smoothing"],
+    category: "models",
+  },
+  {
     slug: "uts-guide",
     week: 8,
     title: "UTS Study Guide",

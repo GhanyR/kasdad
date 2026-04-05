@@ -538,7 +538,6 @@ function RenderTextWithTables({ text, fg, dark }) {
   let i = 0;
 
   while (i < lines.length) {
-    // Check if this line and at least the next line have pipe separators (table block)
     if (lines[i].includes("|") && lines[i].split("|").length >= 2) {
       const tableLines = [];
       while (i < lines.length && lines[i].includes("|") && lines[i].split("|").length >= 2) {
@@ -570,8 +569,20 @@ function RenderTextWithTables({ text, fg, dark }) {
         if (seg.type === "text") {
           return seg.content ? <span key={idx}>{seg.content}{"\n"}</span> : null;
         }
-        // Render table
-        const rows = seg.lines.map(line => line.split("|").map(c => c.trim()));
+        // Parse rows, trim cells, filter empty leading/trailing cells
+        let rows = seg.lines.map(line => {
+          const cells = line.split("|").map(c => c.trim());
+          // Remove empty first/last cells from leading/trailing pipes
+          if (cells.length > 0 && cells[0] === "") cells.shift();
+          if (cells.length > 0 && cells[cells.length - 1] === "") cells.pop();
+          return cells;
+        });
+        // Normalize column count to max
+        const maxCols = Math.max(...rows.map(r => r.length));
+        rows = rows.map(row => {
+          while (row.length < maxCols) row.unshift(""); // pad with empty at start
+          return row;
+        });
         return (
           <div key={idx} style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", margin: "8px 0" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 200 }}>
@@ -588,7 +599,7 @@ function RenderTextWithTables({ text, fg, dark }) {
                 {rows.slice(1).map((row, ri) => (
                   <tr key={ri}>
                     {row.map((cell, ci) => (
-                      <td key={ci} style={{ padding: "5px 10px", border: `1px solid ${borderColor}`, background: cellBg, color: fg, whiteSpace: "nowrap" }}>
+                      <td key={ci} style={{ padding: "5px 10px", border: `1px solid ${borderColor}`, background: ci === 0 && cell ? headerBg : cellBg, color: fg, whiteSpace: "nowrap", fontWeight: ci === 0 ? 600 : 400 }}>
                         {cell}
                       </td>
                     ))}
