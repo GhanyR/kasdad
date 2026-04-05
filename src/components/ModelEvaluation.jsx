@@ -472,6 +472,7 @@ function F1DeepDive({ t, isMobile }) {
 
 // ============ MULTICLASS VISUAL ============
 function MulticlassVisual({ t, isMobile }) {
+  const [showCalc, setShowCalc] = useState(false);
   const cm = [[4, 6, 3], [1, 2, 0], [1, 2, 6]];
   const classes = ["Cat 🐱", "Fish 🐟", "Hen 🐔"];
 
@@ -525,31 +526,38 @@ function MulticlassVisual({ t, isMobile }) {
         ))}
       </div>
 
-      {/* Calculation steps */}
-      <div style={{ padding: isMobile ? "12px" : "14px 16px", background: `${t.purple}06`, borderRadius: 12, border: `1px solid ${t.purple}20`, marginBottom: 12 }}>
-        <div style={{ fontFamily: "'Outfit'", fontSize: 11, fontWeight: 700, color: t.purple, letterSpacing: 1, marginBottom: 8 }}>📐 CARA HITUNG</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {perClass.map((c, i) => (
-            <div key={i} style={{ padding: "8px 10px", background: t.bgCard2, borderRadius: 8, border: `1px solid ${t.border}` }}>
-              <div style={{ fontFamily: "'Outfit'", fontSize: 11, fontWeight: 700, color: t.text, marginBottom: 4 }}>{c.cls}</div>
-              <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.textMuted, lineHeight: 1.8 }}>
-                TP={c.tp}, FP={c.fp}, FN={c.fn}<br />
-                Prec = TP/(TP+FP) = {c.tp}/({c.tp}+{c.fp}) = {c.tp}/{c.tp + c.fp} = <strong style={{ color: t.purple }}>{(c.prec * 100).toFixed(1)}%</strong><br />
-                Rec = TP/(TP+FN) = {c.tp}/({c.tp}+{c.fn}) = {c.tp}/{c.tp + c.fn} = <strong style={{ color: t.accent }}>{(c.rec * 100).toFixed(1)}%</strong><br />
-                F1 = 2×P×R/(P+R) = 2×{c.prec.toFixed(3)}×{c.rec.toFixed(3)}/({c.prec.toFixed(3)}+{c.rec.toFixed(3)}) = <strong style={{ color: t.pink }}>{(c.f1 * 100).toFixed(1)}%</strong>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 10, padding: "8px 10px", background: `${t.purple}08`, borderRadius: 8 }}>
-          <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.textMuted, lineHeight: 1.8 }}>
-            <strong style={{ color: t.purple }}>Macro-F1</strong> = rata-rata F1 = ({perClass.map(c => (c.f1 * 100).toFixed(1) + "%").join(" + ")}) / {perClass.length} = <strong style={{ color: t.purple }}>{(macroF1 * 100).toFixed(1)}%</strong>
-          </div>
-          <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.textMuted, lineHeight: 1.8, marginTop: 4 }}>
-            <strong style={{ color: t.cyan }}>Micro-F1</strong> = Total TP / (Total TP + Total FP) = {totalTP}/({totalTP}+{totalFP}) = {totalTP}/{totalTP + totalFP} = <strong style={{ color: t.cyan }}>{(microP * 100).toFixed(1)}%</strong>
-          </div>
-        </div>
+      {/* Calculation toggle */}
+      <div style={{ textAlign: "center", marginBottom: 12 }}>
+        <button onClick={() => setShowCalc(v => !v)} style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", background: showCalc ? t.purple : `${t.purple}15`, color: showCalc ? "#fff" : t.purple, fontSize: 11, fontWeight: 700, transition: "all 0.2s" }}>
+          📐 {showCalc ? "Tutup Hitungan" : "Lihat Hitungan"}
+        </button>
       </div>
+      {showCalc && (
+        <div style={{ padding: isMobile ? "12px" : "14px 16px", background: `${t.purple}06`, borderRadius: 12, border: `1px solid ${t.purple}20`, marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Outfit'", fontSize: 11, fontWeight: 700, color: t.purple, letterSpacing: 1, marginBottom: 8 }}>📐 CARA HITUNG</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {perClass.map((c, i) => (
+              <div key={i} style={{ padding: "8px 10px", background: t.bgCard2, borderRadius: 8, border: `1px solid ${t.border}` }}>
+                <div style={{ fontFamily: "'Outfit'", fontSize: 11, fontWeight: 700, color: t.text, marginBottom: 4 }}>{c.cls}</div>
+                <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.textMuted, lineHeight: 1.8 }}>
+                  TP={c.tp}, FP={c.fp}, FN={c.fn}<br />
+                  Prec = TP/(TP+FP) = {c.tp}/({c.tp}+{c.fp}) = {c.tp}/{c.tp + c.fp} = <strong style={{ color: t.purple }}>{(c.prec * 100).toFixed(1)}%</strong><br />
+                  Rec = TP/(TP+FN) = {c.tp}/({c.tp}+{c.fn}) = {c.tp}/{c.tp + c.fn} = <strong style={{ color: t.accent }}>{(c.rec * 100).toFixed(1)}%</strong><br />
+                  F1 = 2×P×R/(P+R) = 2×{c.prec.toFixed(3)}×{c.rec.toFixed(3)}/({c.prec.toFixed(3)}+{c.rec.toFixed(3)}) = <strong style={{ color: t.pink }}>{(c.f1 * 100).toFixed(1)}%</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 10, padding: "8px 10px", background: `${t.purple}08`, borderRadius: 8 }}>
+            <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.textMuted, lineHeight: 1.8 }}>
+              <strong style={{ color: t.purple }}>Macro-F1</strong> = rata-rata F1 = ({perClass.map(c => (c.f1 * 100).toFixed(1) + "%").join(" + ")}) / {perClass.length} = <strong style={{ color: t.purple }}>{(macroF1 * 100).toFixed(1)}%</strong>
+            </div>
+            <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: t.textMuted, lineHeight: 1.8, marginTop: 4 }}>
+              <strong style={{ color: t.cyan }}>Micro-F1</strong> = Total TP / (Total TP + Total FP) = {totalTP}/({totalTP}+{totalFP}) = {totalTP}/{totalTP + totalFP} = <strong style={{ color: t.cyan }}>{(microP * 100).toFixed(1)}%</strong>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Macro vs Micro */}
       <div style={{ display: "flex", gap: 12 }}>
         <div style={{ flex: 1, padding: "12px 14px", background: `${t.purple}08`, borderRadius: 10, border: `1px solid ${t.purple}25` }}>
