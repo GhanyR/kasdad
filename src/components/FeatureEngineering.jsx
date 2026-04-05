@@ -194,6 +194,7 @@ const OneHotDemo = ({ t }) => {
 // ═══ VISUAL SCALING DEMO ═══
 const ScalingDemo = ({ t }) => {
   const [method, setMethod] = useState("minmax");
+  const [showCalc, setShowCalc] = useState(false);
   const raw = [1000000, 2000000, 1500000, 2500000, 4000000, 2200000];
   const min = Math.min(...raw);
   const max = Math.max(...raw);
@@ -245,12 +246,41 @@ const ScalingDemo = ({ t }) => {
           );
         })}
       </div>
+      <button onClick={() => setShowCalc(!showCalc)} style={{
+        padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer",
+        background: t.accent + "15", color: t.accent, fontSize: 11, fontWeight: 700, marginTop: 12,
+      }}>📐 Lihat Hitungan</button>
+      {showCalc && (
+        <div style={{
+          marginTop: 10, padding: "12px 14px", background: t.accent + "06", borderRadius: 12,
+          border: "1px solid " + t.accent + "20", fontFamily: "monospace", fontSize: 11,
+          lineHeight: 1.8, color: t.text2,
+        }}>
+          {method === "minmax" ? (<>
+            <div><strong>Min-Max Scaling</strong></div>
+            <div>x' = (x - min) / (max - min)</div>
+            <div style={{ marginTop: 4 }}>Contoh: x = {(raw[0] / 1000000).toFixed(1)}M</div>
+            <div>min = {(min / 1000000).toFixed(1)}M, max = {(max / 1000000).toFixed(1)}M</div>
+            <div style={{ marginTop: 4 }}>x' = ({raw[0]} - {min}) / ({max} - {min})</div>
+            <div>   = {raw[0] - min} / {max - min}</div>
+            <div>   = {((raw[0] - min) / (max - min)).toFixed(2)}</div>
+          </>) : (<>
+            <div><strong>Simple Feature Scaling</strong></div>
+            <div>x' = x / x_max</div>
+            <div style={{ marginTop: 4 }}>Contoh: x = {(raw[0] / 1000000).toFixed(1)}M</div>
+            <div>x_max = {(max / 1000000).toFixed(1)}M</div>
+            <div style={{ marginTop: 4 }}>x' = {raw[0]} / {max}</div>
+            <div>   = {(raw[0] / max).toFixed(2)}</div>
+          </>)}
+        </div>
+      )}
     </div>
   );
 };
 
 // ═══ INFORMATION GAIN CALCULATOR ═══
 const InfoGainDemo = ({ t }) => {
+  const [showCalc, setShowCalc] = useState(false);
   const data = [
     { age: "<=30", buy: false }, { age: "<=30", buy: false },
     { age: "31-40", buy: true }, { age: ">40", buy: true },
@@ -332,6 +362,43 @@ const InfoGainDemo = ({ t }) => {
           Gain(age) = {entropy} − {weightedEntropy} = {gain}
         </div>
       </div>
+      <button onClick={() => setShowCalc(!showCalc)} style={{
+        padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer",
+        background: t.accent + "15", color: t.accent, fontSize: 11, fontWeight: 700, marginTop: 12,
+      }}>📐 Lihat Hitungan</button>
+      {showCalc && (
+        <div style={{
+          marginTop: 10, padding: "12px 14px", background: t.accent + "06", borderRadius: 12,
+          border: "1px solid " + t.accent + "20", fontFamily: "monospace", fontSize: 11,
+          lineHeight: 1.8, color: t.text2,
+        }}>
+          <div><strong>1. Parent Entropy H(S)</strong></div>
+          <div>H(S) = -Σ(p × log₂(p))</div>
+          <div>p(Yes) = {totalYes}/{total} = {(totalYes / total).toFixed(4)}</div>
+          <div>p(No)  = {totalNo}/{total} = {(totalNo / total).toFixed(4)}</div>
+          <div>H(S) = -({(totalYes / total).toFixed(4)} × log₂({(totalYes / total).toFixed(4)})) - ({(totalNo / total).toFixed(4)} × log₂({(totalNo / total).toFixed(4)}))</div>
+          <div>     = {entropy}</div>
+
+          <div style={{ marginTop: 8 }}><strong>2. Child Group Entropies</strong></div>
+          {Object.entries(groups).map(([label, g]) => (
+            <div key={label}>
+              <div>Group "{label}": {g.yes}Y / {g.no}N (total={g.total})</div>
+              {g.entropy === 0
+                ? <div>  H = 0 (pure node)</div>
+                : <div>  H = -({g.yes}/{g.total} × log₂({g.yes}/{g.total})) - ({g.no}/{g.total} × log₂({g.no}/{g.total})) = {g.entropy.toFixed(3)}</div>
+              }
+            </div>
+          ))}
+
+          <div style={{ marginTop: 8 }}><strong>3. Weighted Entropy</strong></div>
+          <div>= {Object.entries(groups).map(([label, g]) => `(${g.total}/${total}) × ${g.entropy.toFixed(3)}`).join(" + ")}</div>
+          <div>= {weightedEntropy}</div>
+
+          <div style={{ marginTop: 8 }}><strong>4. Information Gain</strong></div>
+          <div>Gain = H(S) - Weighted Entropy</div>
+          <div>     = {entropy} - {weightedEntropy} = {gain}</div>
+        </div>
+      )}
     </div>
   );
 };

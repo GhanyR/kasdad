@@ -75,6 +75,7 @@ function InteractiveConfusionMatrix({ t, isMobile }) {
   const [fn, setFn] = useState(10);
   const [fp, setFp] = useState(5);
   const [tn, setTn] = useState(35);
+  const [showCalc, setShowCalc] = useState(false);
   const total = tp + fn + fp + tn;
   const accuracy = total > 0 ? (tp + tn) / total : 0;
   const precision = (tp + fp) > 0 ? tp / (tp + fp) : 0;
@@ -155,6 +156,33 @@ function InteractiveConfusionMatrix({ t, isMobile }) {
         <MetricBadge label="F1-SCORE" value={f1} color={t.pink} desc="Harmonic Mean" />
         <MetricBadge label="G-MEAN" value={gmean} color={t.green} desc="√(Sens×Spec)" />
       </div>
+      {/* Toggle Calculation Breakdown */}
+      <div style={{ textAlign: "center", marginTop: 12 }}>
+        <button
+          onClick={() => setShowCalc(v => !v)}
+          style={{
+            fontFamily: "'Outfit'", fontSize: 12, fontWeight: 600,
+            color: t.purple, background: `${t.purple}12`, border: `1px solid ${t.purple}30`,
+            borderRadius: 20, padding: "6px 16px", cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          📐 {showCalc ? "Tutup Hitungan" : "Lihat Hitungan"}
+        </button>
+      </div>
+      {showCalc && (
+        <div style={{ marginTop: 12, padding: isMobile ? "12px" : "14px 16px", background: `${t.purple}06`, borderRadius: 12, border: `1px solid ${t.purple}20` }}>
+          <div style={{ fontFamily: "'Outfit'", fontSize: 11, fontWeight: 700, color: t.purple, letterSpacing: 1, marginBottom: 10 }}>📐 BREAKDOWN HITUNGAN</div>
+          <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: t.textMuted, lineHeight: 2 }}>
+            <div><span style={{ color: t.cyan, fontWeight: 600 }}>Accuracy</span> = (TP+TN) / Total = ({tp}+{tn}) / {total} = {tp + tn}/{total} = <strong style={{ color: t.cyan }}>{(accuracy * 100).toFixed(1)}%</strong></div>
+            <div><span style={{ color: t.purple, fontWeight: 600 }}>Precision</span> = TP / (TP+FP) = {tp} / ({tp}+{fp}) = {tp}/{tp + fp} = <strong style={{ color: t.purple }}>{(precision * 100).toFixed(1)}%</strong></div>
+            <div><span style={{ color: t.accent, fontWeight: 600 }}>Recall</span> = TP / (TP+FN) = {tp} / ({tp}+{fn}) = {tp}/{tp + fn} = <strong style={{ color: t.accent }}>{(recall * 100).toFixed(1)}%</strong></div>
+            <div><span style={{ color: t.blue, fontWeight: 600 }}>Specificity</span> = TN / (TN+FP) = {tn} / ({tn}+{fp}) = {tn}/{tn + fp} = <strong style={{ color: t.blue }}>{(specificity * 100).toFixed(1)}%</strong></div>
+            <div><span style={{ color: t.pink, fontWeight: 600 }}>F1</span> = 2×P×R / (P+R) = 2×{(precision * 100).toFixed(1)}×{(recall * 100).toFixed(1)} / ({(precision * 100).toFixed(1)}+{(recall * 100).toFixed(1)}) = <strong style={{ color: t.pink }}>{(f1 * 100).toFixed(1)}%</strong></div>
+            <div><span style={{ color: t.green, fontWeight: 600 }}>G-Mean</span> = √(Recall × Specificity) = √({(recall * 100).toFixed(1)} × {(specificity * 100).toFixed(1)}) = <strong style={{ color: t.green }}>{(gmean * 100).toFixed(1)}%</strong></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

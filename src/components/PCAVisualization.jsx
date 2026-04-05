@@ -683,6 +683,7 @@ function PCAStepsSection({ t }) {
 }
 
 function VarianceSection({ t }) {
+  const [showCalc, setShowCalc] = useState(false);
   const eigenvalues = [1.284, 0.049];
   const total = eigenvalues.reduce((a, b) => a + b, 0);
   const explained = eigenvalues.map(v => v / total);
@@ -743,6 +744,49 @@ function VarianceSection({ t }) {
             </div>
           ))}
         </div>
+
+        <div style={{ textAlign: "center", marginTop: 12 }}>
+          <button
+            onClick={() => setShowCalc(v => !v)}
+            style={{
+              background: showCalc ? t.accent : "transparent",
+              color: showCalc ? t.bgCard : t.accent,
+              border: `1px solid ${t.accent}`,
+              borderRadius: 999,
+              padding: "4px 14px",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            📐 {showCalc ? "Tutup Hitungan" : "Lihat Hitungan"}
+          </button>
+        </div>
+
+        {showCalc && (
+          <div style={{
+            marginTop: 12,
+            background: t.bgAccent,
+            borderRadius: 10,
+            padding: 14,
+            border: `1px solid ${t.borderAccent}`,
+            fontFamily: "'Fira Code', monospace",
+            fontSize: 13,
+            lineHeight: 1.9,
+            color: t.text,
+          }}>
+            <div>
+              <span style={{ color: t.textMuted }}>Total eigenvalue</span> = λ₁ + λ₂ = {eigenvalues[0].toFixed(3)} + {eigenvalues[1].toFixed(3)} = <b style={{ color: t.accentWarm }}>{total.toFixed(3)}</b>
+            </div>
+            <div>
+              <span style={{ color: t.accent }}>EV₁</span> = λ₁ / total = {eigenvalues[0].toFixed(3)} / {total.toFixed(3)} = <b style={{ color: t.accent }}>{(explained[0] * 100).toFixed(1)}%</b>
+            </div>
+            <div>
+              <span style={{ color: t.accent2 }}>EV₂</span> = λ₂ / total = {eigenvalues[1].toFixed(3)} / {total.toFixed(3)} = <b style={{ color: t.accent2 }}>{(explained[1] * 100).toFixed(1)}%</b>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Multi-component bar chart */}
