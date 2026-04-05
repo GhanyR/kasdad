@@ -461,6 +461,32 @@ function CostSection({ t, isMobile }) {
             <div style={{ fontSize: 12, fontWeight: 700, color: t.accent2, marginBottom: 4 }}>🔑 GINI vs ENTROPY</div>
             <div style={{ fontSize: 13, color: t.textMuted }}>Keduanya mengukur "kemurnian" node. Gini lebih cepat dihitung, Entropy lebih sensitif terhadap perubahan probabilitas. Dalam praktik, hasilnya sering mirip.</div>
           </div>
+
+          <div style={{ textAlign: "center" }}>
+            <button onClick={() => setShowCalcEntropy(!showCalcEntropy)} style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 11, fontWeight: 700, marginTop: 12, background: showCalcEntropy ? `${t.accent2}20` : `${t.textDim}15`, color: showCalcEntropy ? t.accent2 : t.textMuted }}>
+              {showCalcEntropy ? "✕ Tutup Hitungan" : "📐 Lihat Hitungan"}
+            </button>
+          </div>
+          {showCalcEntropy && (
+            <div style={{ background: `${t.accent2}08`, borderRadius: 12, padding: "16px 20px", marginTop: 12, border: `1px solid ${t.accent2}20`, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted, lineHeight: 1.8 }}>
+              <div style={{ fontWeight: 700, color: t.accent2, marginBottom: 8, fontSize: 13 }}>Contoh: Node dengan 2 Iya + 2 Tidak (4 data)</div>
+              <div>Kelas "Iya": p₁ = 2/4 = 0.5</div>
+              <div>Kelas "Tidak": p₂ = 2/4 = 0.5</div>
+              <div style={{ marginTop: 6, color: t.accent2, fontWeight: 600 }}>
+                H = -Σ pᶜ · log₂(pᶜ)
+              </div>
+              <div>{"  "}= -(0.5 × log₂(0.5)) - (0.5 × log₂(0.5))</div>
+              <div>{"  "}= -(0.5 × -1) - (0.5 × -1)</div>
+              <div>{"  "}= 0.5 + 0.5 = <strong style={{ color: t.text }}>1.0</strong> (max impurity)</div>
+              <div style={{ marginTop: 10, fontWeight: 700, color: t.accent2, fontSize: 13 }}>Contoh: Node dengan 3 Iya + 1 Tidak</div>
+              <div style={{ marginTop: 4 }}>p₁ = 3/4 = 0.75, p₂ = 1/4 = 0.25</div>
+              <div style={{ marginTop: 4, color: t.accent2, fontWeight: 600 }}>
+                H = -(0.75 × log₂(0.75)) - (0.25 × log₂(0.25))
+              </div>
+              <div>{"  "}= -(0.75 × -0.415) - (0.25 × -2.0)</div>
+              <div>{"  "}= 0.311 + 0.5 = <strong style={{ color: t.text }}>0.811</strong></div>
+            </div>
+          )}
         </div>
       )}
       
