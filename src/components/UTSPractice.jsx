@@ -530,6 +530,79 @@ function getVisualComponent(visual, dark, isMobile) {
   }
 }
 
+// ═══════════════ RENDER TEXT WITH TABLES ═══════════════
+
+function RenderTextWithTables({ text, fg, dark }) {
+  const lines = text.split("\n");
+  const segments = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    // Check if this line and at least the next line have pipe separators (table block)
+    if (lines[i].includes("|") && lines[i].split("|").length >= 2) {
+      const tableLines = [];
+      while (i < lines.length && lines[i].includes("|") && lines[i].split("|").length >= 2) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      if (tableLines.length >= 2) {
+        segments.push({ type: "table", lines: tableLines });
+      } else {
+        segments.push({ type: "text", content: tableLines.join("\n") });
+      }
+    } else {
+      const textLines = [];
+      while (i < lines.length && !(lines[i].includes("|") && lines[i].split("|").length >= 2 && i + 1 < lines.length && lines[i + 1].includes("|") && lines[i + 1].split("|").length >= 2)) {
+        textLines.push(lines[i]);
+        i++;
+      }
+      segments.push({ type: "text", content: textLines.join("\n") });
+    }
+  }
+
+  const borderColor = dark ? "#334155" : "#e2e8f0";
+  const headerBg = dark ? "#1e293b" : "#f1f5f9";
+  const cellBg = dark ? "#0f172a" : "#ffffff";
+
+  return (
+    <>
+      {segments.map((seg, idx) => {
+        if (seg.type === "text") {
+          return seg.content ? <span key={idx}>{seg.content}{"\n"}</span> : null;
+        }
+        // Render table
+        const rows = seg.lines.map(line => line.split("|").map(c => c.trim()));
+        return (
+          <div key={idx} style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", margin: "8px 0" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 200 }}>
+              <thead>
+                <tr>
+                  {rows[0].map((cell, ci) => (
+                    <th key={ci} style={{ padding: "6px 10px", background: headerBg, border: `1px solid ${borderColor}`, fontWeight: 700, color: fg, textAlign: "left", whiteSpace: "nowrap" }}>
+                      {cell}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.slice(1).map((row, ri) => (
+                  <tr key={ri}>
+                    {row.map((cell, ci) => (
+                      <td key={ci} style={{ padding: "5px 10px", border: `1px solid ${borderColor}`, background: cellBg, color: fg, whiteSpace: "nowrap" }}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
 // ═══════════════ QUESTION CARD ═══════════════
 
 function QuestionCard({ q, dark, index, isMobile }) {
@@ -568,7 +641,7 @@ function QuestionCard({ q, dark, index, isMobile }) {
       {/* Question */}
       <div style={{ fontSize:14, color:fg, lineHeight:1.7, marginBottom:16, whiteSpace:"pre-line", fontWeight:500 }}>
         <span style={{ color:topicColor, fontWeight:800, marginRight:6 }}>Q{index+1}.</span>
-        {q.soal}
+        <RenderTextWithTables text={q.soal} fg={fg} dark={dark} />
       </div>
 
       {/* Options for PG/Hitungan */}
@@ -636,7 +709,7 @@ function QuestionCard({ q, dark, index, isMobile }) {
           ) : null}
           
           <div style={{ fontSize:13, color:fg, lineHeight:1.8, whiteSpace:"pre-line" }}>
-            {q.explanation.text}
+            <RenderTextWithTables text={q.explanation.text} fg={fg} dark={dark} />
           </div>
 
           {getVisualComponent(q.explanation.visual, dark, isMobile)}
