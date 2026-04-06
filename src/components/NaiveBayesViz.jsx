@@ -90,23 +90,57 @@ function VennSVG({ t }) {
 
 function WeatherCalendar({ t }) {
   const days = ["☁️","☁️","☁️","☀️","🌧️","☀️","☁️","☀️","☁️","☀️","☀️","☁️","🌧️","☁️","🌧️","🌧️","🌧️","🌧️","☁️","☀️","🌧️","☁️","☀️","☀️","☁️","☀️","☁️","☀️","☀️","☁️","🌧️"];
+  const [filter, setFilter] = useState(null);
   const rainy = days.filter(d => d === "🌧️").length;
   const cloudy = days.filter(d => d === "☁️").length;
   const sunny = days.filter(d => d === "☀️").length;
+  const types = [
+    { icon: "🌧️", n: rainy, label: "Rainy", color: t.blue },
+    { icon: "☁️", n: cloudy, label: "Cloudy", color: t.dim },
+    { icon: "☀️", n: sunny, label: "Sunny", color: t.warm },
+  ];
+  const activeType = types.find(w => w.icon === filter);
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3, marginBottom: 14 }}>
-        {days.map((d, i) => (
-          <div key={i} style={{ width: "100%", aspectRatio: "1", borderRadius: 8, background: d === "🌧️" ? t.blue + "15" : d === "☁️" ? t.dim + "15" : t.warm + "15", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: "1px solid " + t.cardBorder }}>{d}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3, marginBottom: 10 }}>
+        {["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(d => (
+          <div key={d} style={{ textAlign: "center", fontSize: 9, color: t.dim, fontWeight: 600, padding: 2 }}>{d}</div>
         ))}
+        {days.map((d, i) => {
+          const isHighlighted = filter === null || d === filter;
+          const isFaded = filter !== null && d !== filter;
+          return (
+            <div key={i} onClick={() => setFilter(filter === d ? null : d)} style={{
+              width: "100%", aspectRatio: "1", borderRadius: 8,
+              background: isHighlighted ? (d === "🌧️" ? t.blue + "20" : d === "☁️" ? t.dim + "15" : t.warm + "20") : t.bg3,
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+              border: isHighlighted && filter ? "2px solid " + (d === "🌧️" ? t.blue : d === "☁️" ? t.dim : t.warm) : "1px solid " + t.cardBorder,
+              opacity: isFaded ? 0.25 : 1, cursor: "pointer", transition: "all 0.2s",
+              transform: isHighlighted && filter ? "scale(1.08)" : "scale(1)",
+            }}>{d}</div>
+          );
+        })}
       </div>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-        {[{ icon: "🌧️", n: rainy, label: "Rainy", color: t.blue }, { icon: "☁️", n: cloudy, label: "Cloudy", color: t.dim }, { icon: "☀️", n: sunny, label: "Sunny", color: t.warm }].map(w => (
-          <div key={w.label} style={{ textAlign: "center", padding: "8px 14px", borderRadius: 10, background: w.color + "0a", border: "1px solid " + w.color + "25" }}>
+      {filter && activeType && (
+        <div style={{ textAlign: "center", padding: "8px 12px", borderRadius: 10, background: activeType.color + "10", border: "1px solid " + activeType.color + "30", marginBottom: 10, animation: "fadeIn 0.2s" }}>
+          <div style={{ fontFamily: "monospace", fontSize: 13, color: activeType.color, fontWeight: 700 }}>
+            P({activeType.label}) = {activeType.n} / 31 = <strong style={{ fontSize: 16 }}>{(activeType.n / 31).toFixed(3)}</strong>
+          </div>
+          <div style={{ fontSize: 10, color: t.sub, marginTop: 2 }}>Klik lagi untuk reset, atau klik cuaca lain</div>
+        </div>
+      )}
+      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+        {types.map(w => (
+          <button key={w.label} onClick={() => setFilter(filter === w.icon ? null : w.icon)} style={{
+            textAlign: "center", padding: "8px 14px", borderRadius: 10,
+            background: filter === w.icon ? w.color + "20" : w.color + "0a",
+            border: filter === w.icon ? "2px solid " + w.color : "1px solid " + w.color + "25",
+            cursor: "pointer", transition: "all 0.2s",
+          }}>
             <div style={{ fontSize: 20 }}>{w.icon}</div>
             <div style={{ fontFamily: "monospace", fontWeight: 800, color: w.color, fontSize: 15 }}>{w.n}/31</div>
             <div style={{ fontSize: 10, color: t.sub }}>{w.label}</div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
