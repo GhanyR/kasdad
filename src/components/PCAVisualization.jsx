@@ -51,6 +51,7 @@ const SECTIONS = [
   { id: "pca-steps", label: "PCA Steps", icon: "🧬" },
   { id: "variance", label: "Variance", icon: "📈" },
   { id: "app", label: "Aplikasi", icon: "🎭" },
+  { id: "uts", label: "UTS Prep", icon: "🎯" },
 ];
 
 // ── SVG Mini Components ──
@@ -936,6 +937,123 @@ function ApplicationSection({ t }) {
   );
 }
 
+// ═══════════ UTS PREP: PCA CHEAT SHEET ═══════════
+
+function UTSPrepSection({ t, isMobile }) {
+  const [showCase1, setShowCase1] = useState(false);
+  const [showCase2, setShowCase2] = useState(false);
+  return (
+    <div>
+      <SectionTitle t={t} icon="🎯" title="PCA — UTS Cheat Sheet" />
+
+      {/* Key insight box */}
+      <div style={{ background: `linear-gradient(135deg, ${t.accentWarm}12, ${t.danger}08)`, borderRadius: 14, padding: 18, border: `2px solid ${t.accentWarm}30`, marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 800, color: t.accentWarm, letterSpacing: 2, marginBottom: 8 }}>⚠️ INSIGHT PENTING DARI ASISTENSI</div>
+        <div style={{ fontSize: 13, color: t.text, lineHeight: 1.8 }}>
+          <strong style={{ color: t.accent }}>Shortcut:</strong> Eigenvector matrix ortogonal → <strong style={{ color: t.accentWarm }}>inverse = transpose!</strong> Jadi kalau soal kasih eigenvectors, tinggal transpose aja buat matriks transformasi.
+        </div>
+        <div style={{ fontSize: 13, color: t.text, lineHeight: 1.8, marginTop: 8 }}>
+          <strong style={{ color: t.danger }}>Tapi:</strong> Kalau soal kasih raw data (bukan eigenvalues), kamu harus hitung eigen dari awal: center data → covariance matrix → det(C−λI)=0 → eigenvalues → eigenvectors.
+        </div>
+      </div>
+
+      {/* Two cases */}
+      <div style={{ fontSize: 14, fontWeight: 700, color: t.text, marginBottom: 10 }}>Di UTS, soal PCA bisa 2 bentuk:</div>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 16 }}>
+
+        {/* Case 1 */}
+        <div style={{ background: t.bgCard, borderRadius: 14, padding: 18, border: `1px solid ${t.accent}30`, cursor: "pointer" }} onClick={() => setShowCase1(!showCase1)}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: t.accent }}>📋 Case 1: Eigenvalues DIBERIKAN</div>
+            <span style={{ color: t.textDim, transform: showCase1 ? "rotate(180deg)" : "", transition: "transform 0.3s" }}>▾</span>
+          </div>
+          <div style={{ fontSize: 11, color: t.textMuted, marginTop: 6 }}>Soal kasih eigenvalues langsung → hitung EV + pilih PC</div>
+          <div style={{ marginTop: 10, padding: "8px 12px", borderRadius: 8, background: t.accent + "0a", fontFamily: "monospace", fontSize: 11, color: t.accent, lineHeight: 1.8 }}>
+            EV_k = λ_k / Σλ × 100%<br />
+            Kumulatif sampai ≥ target %<br />
+            Pilih k PC pertama
+          </div>
+          {showCase1 && (
+            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: t.bgSurface, fontFamily: "monospace", fontSize: 11, lineHeight: 2, color: t.textMuted }}>
+              <div style={{ fontWeight: 700, color: t.accent, marginBottom: 4 }}>Contoh: λ = [4.5, 3.0, 2.5, 1.5, 1.0, 0.5]</div>
+              Total = 13.0<br />
+              EV1 = 4.5/13 = 34.6%<br />
+              EV2 = 3.0/13 = 23.1% → kum: 57.7%<br />
+              EV3 = 2.5/13 = 19.2% → kum: 76.9%<br />
+              EV4 = 1.5/13 = 11.5% → kum: 88.5%<br />
+              EV5 = 1.0/13 = 7.7% → kum: <strong style={{ color: t.accent3 }}>96.2% ✓ ≥90%</strong><br /><br />
+              <strong style={{ color: t.accentWarm }}>⚠️ JEBAKAN:</strong> Dimensi direduksi = 5/6 = 83%<br />
+              96.2% itu EXPLAINED VARIANCE, bukan % dimensi!
+            </div>
+          )}
+        </div>
+
+        {/* Case 2 */}
+        <div style={{ background: t.bgCard, borderRadius: 14, padding: 18, border: `1px solid ${t.accent2}30`, cursor: "pointer" }} onClick={() => setShowCase2(!showCase2)}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: t.accent2 }}>🔢 Case 2: Raw Data DIBERIKAN</div>
+            <span style={{ color: t.textDim, transform: showCase2 ? "rotate(180deg)" : "", transition: "transform 0.3s" }}>▾</span>
+          </div>
+          <div style={{ fontSize: 11, color: t.textMuted, marginTop: 6 }}>Soal kasih data mentah → full pipeline dari scratch</div>
+          <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
+            {[
+              { n: "1", label: "Center data", desc: "x − mean", color: t.accent },
+              { n: "2", label: "Covariance matrix", desc: "m × m", color: t.accent2 },
+              { n: "3", label: "det(C − λI) = 0", desc: "cari eigenvalues", color: t.accent3 },
+              { n: "4", label: "Eigenvectors", desc: "dari tiap λ", color: t.accent4 },
+              { n: "5", label: "Sort descending", desc: "λ terbesar dulu", color: t.accentWarm },
+              { n: "6", label: "Transform", desc: "T × data_centered", color: t.accent },
+            ].map(s => (
+              <div key={s.n} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", borderRadius: 8, background: s.color + "08" }}>
+                <div style={{ width: 20, height: 20, borderRadius: "50%", background: s.color + "20", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "monospace", fontSize: 10, fontWeight: 800, color: s.color, flexShrink: 0 }}>{s.n}</div>
+                <div style={{ fontSize: 11, color: t.text, fontWeight: 600 }}>{s.label}</div>
+                <div style={{ fontSize: 10, color: t.textDim, marginLeft: "auto" }}>{s.desc}</div>
+              </div>
+            ))}
+          </div>
+          {showCase2 && (
+            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: t.bgSurface, fontFamily: "monospace", fontSize: 11, lineHeight: 2, color: t.textMuted }}>
+              <div style={{ fontWeight: 700, color: t.accent2, marginBottom: 4 }}>Contoh 2D: data X1=[1,2,3], X2=[2,4,5]</div>
+              Mean: μ1=2, μ2=3.67<br />
+              Centered: X1'=[-1,0,1], X2'=[-1.67,0.33,1.33]<br /><br />
+              Cov = [Var(X1) Cov(X1,X2); Cov(X1,X2) Var(X2)]<br />
+              = [1.0  1.5; 1.5  2.33]<br /><br />
+              det(C−λI) = (1−λ)(2.33−λ) − 1.5² = 0<br />
+              λ² − 3.33λ + 2.33 − 2.25 = 0<br />
+              λ² − 3.33λ + 0.08 = 0<br />
+              → λ₁ ≈ 3.31, λ₂ ≈ 0.02<br /><br />
+              <strong style={{ color: t.accent3 }}>EV1 = 3.31/3.33 = 99.4%</strong><br />
+              1 PC cukup!<br /><br />
+              <strong style={{ color: t.accentWarm }}>Shortcut:</strong> Eigenvector matrix ortogonal<br />
+              → inverse = TRANSPOSE<br />
+              → T = Eᵀ (tidak perlu hitung inverse!)
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Quick reference */}
+      <div style={{ background: t.bgCard, borderRadius: 14, padding: 18, border: `1px solid ${t.border}` }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: t.accentWarm, marginBottom: 10 }}>⚡ Quick Reference: Jebakan UTS</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {[
+            { trap: "EV 73% = dimensi berkurang 73%", fix: "SALAH! EV ≠ % dimensi. 1 PC dari 4 = 25% dimensi, 73% info.", color: t.danger },
+            { trap: "Yang didiagonalisasi = matriks input", fix: "SALAH! Yang didiagonalisasi = COVARIANCE MATRIX (m×m), bukan data (n×m).", color: t.danger },
+            { trap: "PCA = feature selection", fix: "SALAH! PCA = feature EXTRACTION (buat fitur BARU), bukan pilih yang ada.", color: t.danger },
+            { trap: "Inverse eigenvector matrix sulit", fix: "Eigenvectors ortogonal → inverse = TRANSPOSE! Tinggal flip rows↔cols.", color: t.accent3 },
+            { trap: "PC berkorelasi satu sama lain", fix: "SALAH! PC selalu ORTOGONAL (covariance = 0). Itu tujuan PCA.", color: t.danger },
+          ].map((t2, i) => (
+            <div key={i} style={{ padding: "8px 12px", borderRadius: 8, background: t2.color + "08", borderLeft: `3px solid ${t2.color}40` }}>
+              <div style={{ fontSize: 11, color: t2.color, fontWeight: 700 }}>❌ {t2.trap}</div>
+              <div style={{ fontSize: 11, color: t.textMuted, marginTop: 2 }}>✅ {t2.fix}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SectionTitle({ t, icon, title }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
@@ -964,6 +1082,7 @@ export default function PCAVisualization() {
       case "pca-steps": return <PCAStepsSection t={t} />;
       case "variance": return <VarianceSection t={t} />;
       case "app": return <ApplicationSection t={t} />;
+      case "uts": return <UTSPrepSection t={t} isMobile={isMobile} />;
       default: return null;
     }
   };
