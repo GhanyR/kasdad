@@ -450,6 +450,191 @@ const TOPIC_COLORS = {
   "Naive Bayes Essay": "#e879f9",
 };
 
+const BANK_TOPIC_COLORS = {
+  "Statistik":"#fbbf24","Encoding":"#34d399","PCA":"#60a5fa","PCA Hitungan":"#60a5fa",
+  "Normalisasi":"#34d399","Preprocessing":"#34d399","Bias-Variance":"#c084fc",
+  "Cross-Val":"#f87171","Clustering":"#a78bfa","Decision Tree":"#fb923c","CART":"#fb923c",
+  "Z-Score":"#fbbf24","Metrics":"#f87171","KNN Imputation":"#22d3ee","KNN":"#22d3ee",
+  "Similarity":"#fcd34d","Environment":"#f472b6","Evaluasi":"#f87171",
+  "Naive Bayes":"#e879f9","Imbalanced":"#ef4444",
+};
+
+const BANK_SOAL = [
+{id:"G25-1",yr:"Gasal 25/26",t:"Statistik",q:"Diberikan data: [22, 25, 28, 30, 32, 35, 38, 40, 42, 51]\nQ1 = 28, Q3 = 40\n\nTentukan IQR dan outlier yang harus dihapus.",o:["IQR=8, Batas Atas=50, outlier: 51","IQR=8, Batas Atas=42, outlier: 51","IQR=12, hapus semua >40","IQR=8, tidak ada outlier"],a:0,s:"Menggunakan Q1=30, Q3=38:\nIQR = Q3 - Q1 = 38 - 30 = 8\nBatas Atas = Q3 + 1.5×IQR = 38 + 12 = 50\nBatas Bawah = Q1 - 1.5×IQR = 30 - 12 = 18\nNilai 51 > 50 → OUTLIER",imp:true},
+{id:"G25-2",yr:"Gasal 25/26",t:"Encoding",q:"Dataset dgn fitur kategorikal nominal (warna) untuk KNN. Encoding paling tepat?",o:["One-Hot Encoding","Frequency Encoding","Target Encoding","Label Encoding"],a:0,s:"OHE: biner (1,0,0). Jarak netral.\nLabel Encoding → urutan palsu.\nKNN berbasis jarak → OHE.",imp:true},
+{id:"G25-3",yr:"Gasal 25/26",t:"PCA",q:"PCA 6 fitur. Eigenvalues: [4.5, 3.0, 2.5, 1.5, 1.0, 0.5]. Total=13.0\nMinimal PC untuk ≥90% variance?",o:["3 PC (76.9%)","4 PC (88.5%)","5 PC (96.2%)","6 PC (100%)"],a:2,s:"PC4: 88.5% ← belum 90%\nPC5: 96.2% ✓",imp:true},
+{id:"G25-4",yr:"Gasal 25/26",t:"PCA",q:"X1 dan X2 berkorelasi positif → PCA akan?",o:["Sumbu jadi ortogonal (tidak berkorelasi)","Tetap berkorelasi positif","Menukar posisi fitur","Mengurangi variansi"],a:0,s:"PCA → fitur baru TIDAK BERKORELASI. PC selalu ortogonal.",imp:false},
+{id:"E25-1",yr:"Genap 24/25",t:"Normalisasi",q:"Gaji: [4.5,6,8,12,15]M. MinMax Gaji=4.5? Tanda z-score jika mean=9.1?",o:["MinMax=0, Z negatif","MinMax=0.14, Z negatif","MinMax=0, Z positif","MinMax=0.14, Z nol"],a:0,s:"MinMax = (4.5-4.5)/(15-4.5) = 0\nZ = (4.5-9.1)/σ → negatif (data < mean).",imp:true},
+{id:"E25-2",yr:"Genap 24/25",t:"Preprocessing",q:"Tentang Random Forest preprocessing. Yang SALAH:",o:["Split dulu baru preprocess","RF handle kategorikal langsung","RF punya Feature Importance","RF butuh feature scaling"],a:3,s:"RF threshold-based → scaling tidak mengubah urutan.\nBUTUH scaling: KNN, SVM. TIDAK: DT, RF, NB.",imp:true},
+{id:"E25-5",yr:"Genap 24/25",t:"PCA Hitungan",q:"10 fitur, eigenvalues: [6.50,3.85,2.90,2.10,1.75,1.40,1.10,0.85,0.55,0.40]\nTotal=21.40. EV PC5? EV PC9? Min PC untuk 95%?",o:["EV5=8.18%, EV9=2.57%, 8 PC","EV5=1.75%, EV9=0.55%, 7 PC","EV5=8.18%, EV9=2.57%, 7 PC","EV5=8.18%, EV9=2.57%, 9 PC"],a:0,s:"EV5=1.75/21.40=8.18%\nEV9=0.55/21.40=2.57%\nPC8 kumulatif=95.56% ✓",imp:true},
+{id:"E25-6",yr:"Genap 24/25",t:"Bias-Variance",q:"Bias & variance diminimalkan → sisa error? Metode turunkan masing-masing?",o:["Irreducible error; Boosting↓bias, Bagging↓variance","Training error; Boosting↓variance, Bagging↓bias","Validation error; keduanya turunkan bias","Model error; tidak bisa dikurangi"],a:0,s:"ε = irreducible error.\nBIAS → Boosting. VARIANCE → Bagging.",imp:true},
+{id:"21-1",yr:"Ganjil 21/22",t:"Cross-Val",q:"10-fold CV, 200 data. K, M, N?",o:["K=10, M=180, N=20","K=10, M=200, N=20","K=1, M=180, N=20","K=10, M=190, N=10"],a:0,s:"K=10, N=200/10=20, M=200-20=180.",imp:false},
+{id:"21-5",yr:"Ganjil 21/22",t:"Statistik",q:"X=[2,2,2,2,2], Y=[0,1,2,3,4]. Mean & std?",o:["Sama semua","Mean sama, std berbeda","Mean berbeda, std sama","Mean berbeda, std berbeda"],a:1,s:"Mean=2 sama. Std X=0, Std Y=√2≈1.41 → berbeda.",imp:false},
+{id:"21-6",yr:"Ganjil 21/22",t:"Normalisasi",q:"Raw MSE=1150, setelah z-score MSE=0.9. Kedua lebih baik?",o:["True","False"],a:1,s:"FALSE! MSE tidak bisa dibandingkan jika skala berbeda!",imp:true},
+{id:"21-7",yr:"Ganjil 21/22",t:"Decision Tree",q:"DT standarisasi vs tanpa → prediksi berbeda?",o:["True","False"],a:1,s:"FALSE! DT threshold-based. Standarisasi tidak ubah urutan → split SAMA.",imp:true},
+{id:"21-8",yr:"Ganjil 21/22",t:"Z-Score",q:"Tes A: 95,μ=90,σ=10. Tes B: 70,μ=60,σ=2. Mana benar?",o:["Z_B=7.0","Z_A=1.5","Z_A=Z_B","Z_B=0.5","Tidak ada tepat"],a:4,s:"Z_A=0.5, Z_B=5.0. Semua pilihan salah → E.",imp:false},
+{id:"21-9",yr:"Ganjil 21/22",t:"Metrics",q:"Diagnosa siswa berkebutuhan khusus. Minimisir pendamping tidak perlu. Metrik?",o:["Precision","Brier Score","Accuracy","Recall"],a:0,s:"Minimisir FP → Precision.",imp:true},
+{id:"22-1",yr:"Gasal 22/23",t:"Statistik",q:"[5,6,3,1,4,2]. IQR?",o:["2","3","5","-2"],a:1,s:"Urutkan→[1,2,3,4,5,6]. Q1=2, Q3=5. IQR=3.",imp:false},
+{id:"22-2",yr:"Gasal 22/23",t:"PCA",q:"Pernyataan TIDAK TEPAT tentang PCA:",o:["PC saling ortogonal","Didiagonalisasi = matriks input n×m","PC1 = eigenvalue terbesar","PCA = transformasi basis"],a:1,s:"Yang didiagonalisasi = COVARIANCE MATRIX (m×m), bukan input (n×m).",imp:true},
+{id:"22-4",yr:"Gasal 22/23",t:"KNN",q:"KNN klasifikasi dgn jarak ke centroid kelas?",o:["Benar","Salah"],a:1,s:"SALAH! KNN → jarak ke SEMUA data. Yang pakai centroid = K-MEANS.",imp:true},
+{id:"23-1",yr:"Gasal 23/24",t:"PCA",q:"EV=[0.73,0.21,0.04,0.01]. Ambil 1 PC → dimensi jadi?",o:["27%","25%","Tidak ditentukan","73%"],a:1,s:"JEBAKAN! Dimensi=1/4=25%. 73% itu EV, bukan % dimensi!\n60%+ salah menjawab 73%.",imp:true},
+{id:"23-2",yr:"Gasal 23/24",t:"Decision Tree",q:"Pernyataan PALING TEPAT tentang DT:",o:["Leaf harus pure","DT implicit feature selection","Model linier","Harus encode+normalisasi"],a:1,s:"DT memilih fitur terbaik → implicit feature selection.",imp:true},
+{id:"23-3",yr:"Gasal 23/24",t:"CART",q:"Gini Index untuk regression tree?",o:["True","False"],a:1,s:"FALSE! Gini = classification. Regression → MSE.",imp:true},
+{id:"23-4",yr:"Gasal 23/24",t:"Evaluasi",q:"F1 >90% → specificity juga tinggi?",o:["Benar","Salah"],a:1,s:"SALAH! F1 hanya Precision+Recall. Specificity=TN/(TN+FP) terpisah.\n70%+ salah di 2023!",imp:true},
+{id:"23-5",yr:"Gasal 23/24",t:"Preprocessing",q:"Preprocessing WAJIB KNN tapi tidak DT:",o:["Handle outlier","Cek format","Buang fitur low corr","Normalisasi"],a:3,s:"KNN=distance → scaling wajib. DT=threshold → tidak perlu.",imp:true},
+{id:"NB-1",yr:"Genap 23/24",t:"Naive Bayes",q:"Asumsi utama Naive Bayes:",o:["Fitur harus numerik","Conditional independent given class","Distribusi normal","Kelas seimbang"],a:1,s:"P(X₁,X₂|C)=P(X₁|C)×P(X₂|C). Fitur independen given kelas.",imp:true},
+{id:"NB-2",yr:"Genap 23/24",t:"Naive Bayes",q:"P(fitur|class)=0 → dampak?",o:["Normal","Seluruh posterior=0","Crash","Ganti model"],a:1,s:"Zero frequency! Satu 0 → semua 0. Solusi: Laplace (+1).",imp:true},
+{id:"IM-1",yr:"Gasal 24/25",t:"Imbalanced",q:"SMOTE sebelum train-test split. Kesalahan?",o:["Tidak ada","SMOTE hanya pada training SETELAH split","SMOTE setelah evaluasi","SMOTE tidak boleh"],a:1,s:"DATA LEAKAGE! SMOTE hanya di training data setelah split.",imp:true},
+];
+
+// ═══════════════ BANK SOAL COMPONENT ═══════════════
+
+function BankSoalTab({ dark, isMobile }) {
+  const [filter, setFilter] = useState("all");
+  const [openQ, setOpenQ] = useState(null);
+  const [understood, setUnderstood] = useState(() => {
+    try { const s = localStorage.getItem("kasdad-bank-understood"); return s ? new Set(JSON.parse(s)) : new Set(); } catch { return new Set(); }
+  });
+  const [quizMode, setQuizMode] = useState(false);
+  const [qi, setQi] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [showed, setShowed] = useState(false);
+  const [score, setScore] = useState({ r: 0, t: 0 });
+
+  const bg = dark ? "#1e293b" : "#ffffff";
+  const bg2 = dark ? "#0f172a" : "#f8fafc";
+  const border = dark ? "#334155" : "#e2e8f0";
+  const fg = dark ? "#e2e8f0" : "#1e293b";
+  const fgSub = dark ? "#94a3b8" : "#64748b";
+  const ac = "#f59e0b";
+  const gn = dark ? "#4ade80" : "#16a34a";
+  const rd = dark ? "#fb7185" : "#dc2626";
+
+  const toggleUnderstood = (id) => {
+    setUnderstood(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      localStorage.setItem("kasdad-bank-understood", JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  const years = [...new Set(BANK_SOAL.map(q => q.yr))];
+  const filtered = filter === "all" ? BANK_SOAL : filter === "penting" ? BANK_SOAL.filter(q => q.imp) : filter === "belum" ? BANK_SOAL.filter(q => !understood.has(q.id)) : BANK_SOAL.filter(q => q.yr === filter);
+  const cq = filtered[qi % Math.max(filtered.length, 1)];
+
+  const topicColor = (t) => BANK_TOPIC_COLORS[t] || "#94a3b8";
+
+  const check = () => { if (pick === null) return; setShowed(true); setScore(s => ({ r: s.r + (pick === cq.a ? 1 : 0), t: s.t + 1 })); };
+  const next = () => { setQi(i => (i + 1) % filtered.length); setPick(null); setShowed(false); };
+
+  return (
+    <div>
+      {/* Stats bar */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ padding: "6px 12px", borderRadius: 8, background: gn + "15", fontSize: 11, fontWeight: 700, color: gn }}>
+          ✅ {understood.size}/{BANK_SOAL.length} paham
+        </div>
+        <div style={{ padding: "6px 12px", borderRadius: 8, background: rd + "15", fontSize: 11, fontWeight: 700, color: rd }}>
+          ❌ {BANK_SOAL.length - understood.size} belum
+        </div>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => { setQuizMode(!quizMode); setQi(0); setPick(null); setShowed(false); setScore({ r: 0, t: 0 }); }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer", background: quizMode ? ac : ac + "20", color: quizMode ? "#000" : ac, fontSize: 11, fontWeight: 700, fontFamily: "inherit" }}>
+          {quizMode ? "📋 Browse" : "⚡ Quiz Mode"}
+        </button>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ height: 4, background: border, borderRadius: 4, marginBottom: 12, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${(understood.size / BANK_SOAL.length) * 100}%`, background: `linear-gradient(90deg, ${gn}, #34d399)`, borderRadius: 4, transition: "width 0.4s" }} />
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 4, marginBottom: 14, overflowX: "auto", paddingBottom: 4 }}>
+        {[{ id: "all", label: `Semua (${BANK_SOAL.length})` }, { id: "penting", label: `⭐ Penting (${BANK_SOAL.filter(q => q.imp).length})` }, { id: "belum", label: `❌ Belum paham (${BANK_SOAL.length - understood.size})` }, ...years.map(y => ({ id: y, label: `${y} (${BANK_SOAL.filter(q => q.yr === y).length})` }))].map(f => (
+          <button key={f.id} onClick={() => { setFilter(f.id); setQi(0); setPick(null); setShowed(false); }} style={{ padding: "5px 10px", borderRadius: 8, border: `1px solid ${filter === f.id ? ac : border}`, background: filter === f.id ? ac + "15" : "transparent", color: filter === f.id ? ac : fgSub, fontSize: 10, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "inherit", flexShrink: 0 }}>
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {!quizMode ? (
+        /* BROWSE MODE */
+        <div>
+          {filtered.map((q, i) => (
+            <div key={q.id} style={{ marginBottom: 4, borderRadius: 10, overflow: "hidden", background: bg, border: `1px solid ${openQ === i ? ac + "40" : border}`, transition: "all 0.2s" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 12px", cursor: "pointer" }} onClick={() => setOpenQ(openQ === i ? null : i)}>
+                {/* Understood checkbox */}
+                <button onClick={(e) => { e.stopPropagation(); toggleUnderstood(q.id); }} style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${understood.has(q.id) ? gn : border}`, background: understood.has(q.id) ? gn + "20" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}>
+                  {understood.has(q.id) && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={gn} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>}
+                </button>
+                {q.imp && <span style={{ fontSize: 10 }}>⭐</span>}
+                <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 10, background: topicColor(q.t) + "20", color: topicColor(q.t), fontWeight: 700, flexShrink: 0 }}>{q.t}</span>
+                <span style={{ fontSize: 9, color: fgSub, flexShrink: 0 }}>{q.yr}</span>
+                <span style={{ fontSize: 11, color: fg, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{q.q.split("\n")[0].slice(0, 55)}</span>
+                <span style={{ color: fgSub, fontSize: 10, transition: "transform 0.2s", transform: openQ === i ? "rotate(180deg)" : "" }}>▾</span>
+              </div>
+              {openQ === i && (
+                <div style={{ padding: "0 12px 14px" }}>
+                  <div style={{ fontSize: 12, color: fg, lineHeight: 1.8, whiteSpace: "pre-line", marginBottom: 10 }}>{q.q}</div>
+                  {q.o.map((o, j) => (
+                    <div key={j} style={{ padding: "6px 10px", borderRadius: 7, marginBottom: 2, fontSize: 11, background: j === q.a ? gn + "12" : bg2, border: `1.5px solid ${j === q.a ? gn : border}`, color: j === q.a ? gn : fgSub, fontWeight: j === q.a ? 600 : 400 }}>
+                      {o} {j === q.a && " ✓"}
+                    </div>
+                  ))}
+                  <div style={{ marginTop: 10, padding: 12, borderRadius: 10, background: ac + "06", border: `1px solid ${ac}15` }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: ac, letterSpacing: 1, marginBottom: 4 }}>PEMBAHASAN</div>
+                    <div style={{ fontSize: 11, color: fgSub, lineHeight: 1.8, whiteSpace: "pre-line" }}>{q.s}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : cq ? (
+        /* QUIZ MODE */
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            <span style={{ fontSize: 10, color: fgSub }}>{(qi % filtered.length) + 1}/{filtered.length}</span>
+            {score.t > 0 && <span style={{ fontSize: 10, fontFamily: "monospace", color: score.r / score.t >= 0.7 ? gn : rd }}>{score.r}/{score.t} ({Math.round(score.r / score.t * 100)}%)</span>}
+          </div>
+          <div style={{ height: 3, background: border, borderRadius: 3, marginBottom: 12 }}><div style={{ height: "100%", width: `${((qi % filtered.length) + 1) / filtered.length * 100}%`, background: ac, borderRadius: 3, transition: "width 0.3s" }} /></div>
+          <div style={{ background: bg, borderRadius: 12, padding: 16, border: `1px solid ${border}` }}>
+            <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+              {cq.imp && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 10, background: "#ef444420", color: "#ef4444", fontWeight: 700 }}>⭐ PENTING</span>}
+              <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 10, background: topicColor(cq.t) + "20", color: topicColor(cq.t), fontWeight: 700 }}>{cq.t}</span>
+              <span style={{ fontSize: 9, color: fgSub }}>{cq.yr}</span>
+            </div>
+            <div style={{ fontSize: 13, color: fg, lineHeight: 1.8, marginBottom: 14, whiteSpace: "pre-line" }}>{cq.q}</div>
+            {cq.o.map((o, j) => {
+              const isA = showed && j === cq.a, isW = showed && j === pick && j !== cq.a;
+              return (
+                <button key={j} onClick={() => !showed && setPick(j)} style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", borderRadius: 8, marginBottom: 3, cursor: showed ? "default" : "pointer", fontSize: 11, fontFamily: "inherit", background: isA ? gn + "15" : isW ? rd + "15" : pick === j ? ac + "08" : bg2, border: `1.5px solid ${isA ? gn : isW ? rd : pick === j ? ac + "40" : border}`, color: isA ? gn : isW ? rd : fg, fontWeight: isA ? 600 : 400 }}>
+                  {o} {isA && " ✓"} {isW && " ✗"}
+                </button>
+              );
+            })}
+            {showed && (
+              <div style={{ marginTop: 10, padding: 12, borderRadius: 10, background: ac + "06", border: `1px solid ${ac}15` }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: ac, letterSpacing: 1, marginBottom: 4 }}>PEMBAHASAN</div>
+                <div style={{ fontSize: 11, color: fgSub, lineHeight: 1.8, whiteSpace: "pre-line" }}>{cq.s}</div>
+              </div>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+            {showed && <button onClick={() => toggleUnderstood(cq.id)} style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${understood.has(cq.id) ? gn : border}`, background: understood.has(cq.id) ? gn + "15" : "transparent", color: understood.has(cq.id) ? gn : fgSub, cursor: "pointer", fontSize: 11, fontWeight: 600, fontFamily: "inherit" }}>
+              {understood.has(cq.id) ? "✅ Sudah paham" : "Tandai paham"}
+            </button>}
+            <button onClick={showed ? next : check} disabled={!showed && pick === null} style={{ flex: 1, padding: 10, borderRadius: 8, border: "none", cursor: !showed && pick === null ? "not-allowed" : "pointer", background: !showed && pick === null ? border : ac, color: !showed && pick === null ? fgSub : "#000", fontWeight: 700, fontSize: 12, fontFamily: "inherit" }}>
+              {showed ? "Berikutnya →" : "Cek Jawaban"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 // ═══════════════ VISUAL COMPONENTS ═══════════════
 
 function PEASDiagram({ dark, isMobile }) {
@@ -990,7 +1175,7 @@ export default function KASDADExamPractice() {
   const isMobile = useIsMobile();
   const [dark, setDark] = useState(false);
   const [tab, setTab] = useState("overview");
-  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["overview","practice","formulas"],tab,setTab);}catch{}
+  try{const{useTabSwipe}=require("@/lib/SwipeNavigationContext");useTabSwipe(["overview","practice","bank","formulas"],tab,setTab);}catch{}
   const [filter, setFilter] = useState("all");
 
   const bg = dark ? "#0f172a" : "#f8fafc";
@@ -1006,6 +1191,7 @@ export default function KASDADExamPractice() {
   const tabs = [
     { id: "overview", label: "📋 Overview", desc: "Peta materi" },
     { id: "practice", label: "🧪 Latihan", desc: `${QUESTIONS.length} soal` },
+    { id: "bank", label: "📦 Bank Soal", desc: `${BANK_SOAL.length} soal UTS` },
     { id: "formulas", label: "📝 Rumus", desc: "Cheat sheet" },
   ];
 
@@ -1144,6 +1330,15 @@ export default function KASDADExamPractice() {
               {filteredQ.map((q, i) => (
                 <QuestionCard key={q.id} q={q} dark={dark} index={QUESTIONS.indexOf(q)} isMobile={isMobile} />
               ))}
+            </div>
+          )}
+
+          {/* BANK SOAL TAB */}
+          {tab === "bank" && (
+            <div style={{ background:cardBg, borderRadius:16, padding: isMobile ? 16 : 24, border:`1px solid ${border}` }}>
+              <h2 style={{ fontSize:18, fontWeight:800, marginBottom:4, color:fg }}>📦 Bank Soal UTS (Multi-Year)</h2>
+              <p style={{ color:fgSub, fontSize:12, marginBottom:16 }}>{BANK_SOAL.length} soal dari 5 tahun UTS · Centang yang sudah paham · ⭐ = sering keluar</p>
+              <BankSoalTab dark={dark} isMobile={isMobile} />
             </div>
           )}
 
