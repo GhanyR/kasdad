@@ -21,6 +21,7 @@ const COMPONENT_MAP: Record<string, ReturnType<typeof dynamic>> = {
   imbalanced: dynamic(() => import("@/components/ImbalancedClassification"), { ssr: false, loading: () => <Loading /> }),
   "naive-bayes": dynamic(() => import("@/components/NaiveBayesViz"), { ssr: false, loading: () => <Loading /> }),
   "uts-guide": dynamic(() => import("@/components/UTSGuide"), { ssr: false, loading: () => <Loading /> }),
+  "exam-intel": dynamic(() => import("@/components/ExamIntel"), { ssr: false, loading: () => <Loading /> }),
   "uts-practice": dynamic(() => import("@/components/UTSPractice"), { ssr: false, loading: () => <Loading /> }),
 };
 

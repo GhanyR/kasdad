@@ -5898,3 +5898,222 @@ Hitung prediksi NB dari dataset. Fitur numerik (Gaussian) & kategorikal. Analisi
 5. Jika fitur TIDAK disebutkan di query -> JANGAN masukkan!
 6. Bandingkan antar kelas, pilih yang lebih besar
 7. Fitur overlap = kontribusi rendah, fitur berbeda signifikan = kontribusi tinggi
+
+---
+
+# EXAM INTEL — Prediksi & Strategi UTS
+
+> Berdasarkan analisis 5 tahun UTS + Asistensi PDF + Tips Asdos
+
+## FORMAT UTS
+
+| Item | Detail |
+|------|--------|
+| Format | 60 pts (PG+Isian) + 40 pts (4-5 Essay) |
+| Waktu | 150 menit (2.5 jam) |
+| Notes | 8 halaman A4, open notes |
+| Kalkulator | Boleh (scientific) |
+
+## TOPIC WEIGHT (dari analisis 5 tahun UTS)
+
+| Topik | Weight | Essay? | PG? |
+|-------|--------|--------|-----|
+| Evaluasi & Metrics | 17% | ✅ | ✅ |
+| CART / Decision Tree | 14% | ✅ | ✅ |
+| Preprocessing | 12% | ❌ | ✅ |
+| KNN | 11% | ✅ | ✅ |
+| PCA | 10% | ✅ | ✅ |
+| EDA & Statistik | 9% | ❌ | ✅ |
+| Bias-Variance | 7% | ❌ | ✅ |
+| Random Forest & Ensemble | 7% | ❌ | ✅ |
+| Naive Bayes | 5% | ✅ | ✅ |
+| AI & Agents | 5% | ❌ | ✅ |
+| Search Algorithms | 4% | ❌ | ✅ |
+| Imbalanced Classification | 3% | ❌ | ✅ |
+
+## TIME STRATEGY
+
+| Waktu | Tugas | Tips |
+|-------|-------|------|
+| 0–50' | 30 PG/BS | Yang yakin dulu. Flag ragu. Skip >2min/soal. |
+| 50–70' | Review PG | Kembali ke flagged. Cek hitungan. |
+| 70–130' | 4–5 Essay | Tulis RUMUS dulu, baru hitung. Tunjukkan SEMUA langkah. |
+| 130–150' | Final | Semua sub-soal terjawab? Nama+NPM? |
+
+## PREDIKSI ESSAY
+
+### 1. Bangun Decision Tree (CART) — 98% chance
+**Kenapa:** Asdos bilang "Sering muncul sebagai esai UTS, biasanya sampai pembentukan Root." Muncul di SETIAP UTS sejak 2021.
+
+**Steps:**
+1. Hitung Gini(S) keseluruhan: `Gini = 1 − Σpᵢ²`
+2. Siapkan kandidat split per fitur (kategorik: setiap nilai unik, numerik: midpoint)
+3. Hitung weighted Gini: `Gini_split = Σ(|Sⱼ|/|S|) × Gini(Sⱼ)`
+4. Pilih split dengan weighted Gini TERKECIL → jadi root
+5. Ulangi rekursif sampai pure/stopping
+6. DT TIDAK perlu encoding
+7. Regression tree: ganti Gini dengan MSE, leaf = MEAN
+
+**History:** 2021: 8 baris. 2022: Titanic. 2023: Alien/Manusia. Gasal 24/25: classification + regression.
+
+### 2. KNN: Preprocessing + Prediksi — 92% chance
+**Kenapa:** Setiap tahun muncul. Full pipeline selalu ditanyakan.
+
+**Steps:**
+1. Encode: Nominal→OHE, Ordinal→Label, Binary→0/1
+2. Normalisasi: MinMax atau Z-score
+3. Hitung jarak ke SEMUA training (⚠️ target jangan masuk distance!)
+4. Sort, ambil K terdekat
+5. Classification→vote, Regression→average, Imputation→nearest value
+6. Diskusikan K: K=1 high var, K=N high bias
+
+### 3. Naive Bayes Classification — 85% chance
+**Kenapa:** BARU semester ini. Heavy asistensi emphasis.
+
+**Steps:**
+1. Prior: P(C) = count(C) / total
+2. Kategorikal: P(xᵢ|C) = count(xᵢ AND C) / count(C)
+3. Numerik: `P(x|C) = (1/σ√2π) × e^(−(x−μ)²/2σ²)`, hitung μ,σ per kelas
+4. Kalikan: `P(C|X) ∝ P(C) × ΠP(xᵢ|C)`
+5. Bandingkan kelas → pilih terbesar
+6. ⚠️ Zero frequency: Laplace `(count+1)/(N+|V|)`
+7. Fitur tak disebut → jangan masukkan
+
+### 4. Confusion Matrix + ROC — 75% chance
+**Steps:**
+1. Tentukan kelas positif
+2. Isi TP, TN, FP, FN
+3. Hitung: Acc, Prec, Rec, Spec, F1
+4. ROC: per threshold hitung TPR & FPR
+5. Plot, hitung AUC
+6. Threshold optimal = closest to (0,1)
+
+### 5. PCA Computation — 65% chance
+**Steps:**
+- Case 1 (eigenvalues given): EV = λᵢ/Σλ, kumulatif, pilih k PC
+- Case 2 (raw data): center → cov(m×m) → det(C−λI)=0 → eigenvalues → eigenvectors → sort → T=transpose(eigvecs) → project
+- Shortcut: inverse eigenvector = TRANSPOSE (ortogonal)
+
+## JEBAKAN UTS (TRAPS)
+
+| Jebakan | Koreksi | Salah Rate |
+|---------|---------|------------|
+| EV ≠ Dimensi Reduksi | 1 PC dari 4 = 25% dimensi, bukan 73%! | 60%+ |
+| F1 tinggi ≠ Spec tinggi | F1 hanya P & R. Spec terpisah. | 70%+ |
+| MSE beda skala | TIDAK bisa dibandingkan | 55%+ |
+| DT + standarisasi | Split SAMA (threshold-based) | 55%+ |
+| KNN ≠ centroid | KNN = semua data. Centroid = K-Means | Klasik |
+| Gini = classification only | Regression = MSE | Klasik |
+| Cov matrix = m×m | Bukan n×m (data) | 40%+ |
+| SMOTE sebelum split | DATA LEAKAGE! Hanya di training | Penting |
+| NB: P(x|C)=0 | Semua posterior = 0. Laplace! | Baru |
+| KNN imputation target | Target JANGAN masuk distance | Penting |
+| Bootstrap = WITH replacement | Bisa duplikat. Boosting ≠ paralel | Klasik |
+| Pearson r≈0 | Bisa nonlinear kuat (hanya LINEAR) | 40%+ |
+
+## QUICK DECISION TABLE
+
+| Situasi | Jawaban | Jangan Terjebak |
+|---------|---------|-----------------|
+| Prediksi harga rumah | Regression | Bukan classification |
+| EV=73%, 1/4 PC | Dimensi = 25% | Bukan 73% |
+| DT perlu normalisasi? | TIDAK | Threshold-based |
+| KNN perlu normalisasi? | YA, WAJIB | Distance-based |
+| RF perlu normalisasi? | TIDAK | Threshold-based |
+| Gini untuk regression? | TIDAK | Gini = classification |
+| F1 tinggi → spec tinggi? | TIDAK pasti | F1 hanya P & R |
+| Cov matrix PCA? | m × m (fitur) | Bukan n × m |
+| SMOTE kapan? | Setelah split, train only | Sebelum = leakage |
+| NB: P(x|C)=0? | Posterior = 0 | Laplace smoothing |
+| PCA inverse eigvec? | TRANSPOSE | Karena ortogonal |
+| Boosting vs Bagging? | Boost↓bias, Bag↓var | Jangan terbalik! |
+
+## SEMUA RUMUS
+
+### Statistik
+- `IQR = Q3−Q1`
+- `Outlier: <Q1−1.5·IQR or >Q3+1.5·IQR`
+- `Right-skew: Mean > Median`
+- `Var = Σ(xᵢ−μ)²/n`
+- `Std = √Var`
+
+### Scaling
+- `MinMax = (x−min)/(max−min)`
+- `Z-score = (x−μ)/σ`
+- Below mean → Z negatif
+
+### Distance
+- `Manhattan = Σ|xᵢ−yᵢ|`
+- `Euclidean = √Σ(xᵢ−yᵢ)²`
+- `Cosine = A·B/(‖A‖·‖B‖)`
+- `Jaccard = |A∩B|/|A∪B|`
+
+### CART
+- `Gini = 1−Σpᵢ²` (classification)
+- `Entropy = −Σpᵢ·log₂pᵢ`
+- `IG = H(parent)−Σwⱼ·H(childⱼ)`
+- Regression: MSE split
+
+### Classification Metrics
+- `Precision = TP/(TP+FP)`
+- `Recall = TP/(TP+FN)`
+- `Specificity = TN/(TN+FP)`
+- `F1 = 2PR/(P+R)`
+- `Accuracy = (TP+TN)/N`
+- `FPR = FP/(FP+TN) = 1−Spec`
+
+### Regression Metrics
+- `MAE = Σ|yᵢ−ŷᵢ|/n`
+- `MSE = Σ(yᵢ−ŷᵢ)²/n`
+- `R² = 1−SS_res/SS_tot`
+
+### PCA
+- `EV = λᵢ/Σλ`
+- `CumEV = Σλ₁..ₖ/Σλ`
+- `Cov matrix = m×m`
+- `Transform: T = transpose(eigvecs)`
+
+### Ensemble
+- `RF classification = majority vote`
+- `RF regression = mean(trees)`
+- `Bagging → ↓Variance`
+- `Boosting → ↓Bias`
+
+### Naive Bayes
+- `P(C|X) ∝ ΠP(xᵢ|C)·P(C)`
+- `Gaussian: (1/σ√2π)·e^(−(x−μ)²/2σ²)`
+- `Laplace: (count+1)/(N+|V|)`
+
+### Bias-Variance
+- `Error = Bias²+Variance+ε`
+- `ε = irreducible error`
+- `Overfit: train ≫ test (high variance)`
+- `Underfit: both low (high bias)`
+
+### Search
+- `A*: f(n) = g(n)+h(n)`
+- `Admissible: h(n) ≤ h*(n)`
+- `Consistent: h(n) ≤ c(n,a,n')+h(n')`
+- `UCS = A* with h=0`
+
+## MODEL COMPARISON TABLE
+
+| Property | DT | RF | KNN | NB |
+|----------|----|----|-----|----|
+| Normalisasi | ❌ | ❌ | ✅ WAJIB | ❌ |
+| Encoding | ❌ optional | ❌ optional | ✅ WAJIB | Frekuensi |
+| Outlier | ⚠️ Sensitif | ✅ Robust | ⚠️ Sensitif | ✅ Robust |
+| Interpretable | ✅ Tinggi | ❌ Rendah | ❌ Rendah | ✅ Cukup |
+| Feature Selection | ✅ implicit | ✅ implicit | ❌ | ❌ |
+| Lazy learner | ❌ | ❌ | ✅ Ya | ❌ |
+| Bias/Variance | Low B, High V | Low B, Low V | Depends on K | High B, Low V |
+
+## ASDOS TIPS
+
+- PCA: eigenvector matrix ortogonal → inverse = TRANSPOSE (tidak perlu hitung inverse manual)
+- PCA: kalau soal kasih raw data → tetap harus hitung eigen sendiri dari awal
+- KNN imputation: fitur yang ingin diprediksi JANGAN masuk ke perhitungan distance
+- CART essay: biasanya sampai pembentukan ROOT saja, jarang sampai full tree
+- SMOTE: harus SETELAH train-test split, hanya pada training data
+- Recall trick: lihat penyebut di confusion matrix. Recall = baris actual+. Precision = kolom predicted+.
+

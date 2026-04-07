@@ -166,6 +166,17 @@ export const MATERIALS: Material[] = [
     category: "exam",
   },
   {
+    slug: "exam-intel",
+    week: 8,
+    title: "Exam Intel",
+    subtitle: "Prediksi Essay, Jebakan, Strategi UTS",
+    icon: "🎯",
+    color: "#dba830",
+    gradient: "from-amber-500/20 to-yellow-600/20",
+    topics: ["Prediksi Essay", "Jebakan UTS", "Time Strategy", "Asdos Tips"],
+    category: "exam",
+  },
+  {
     slug: "uts-practice",
     week: 8,
     title: "UTS Practice",
