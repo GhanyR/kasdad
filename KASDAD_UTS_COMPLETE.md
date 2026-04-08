@@ -6117,3 +6117,151 @@ Hitung prediksi NB dari dataset. Fitur numerik (Gaussian) & kategorikal. Analisi
 - SMOTE: harus SETELAH train-test split, hanya pada training data
 - Recall trick: lihat penyebut di confusion matrix. Recall = baris actual+. Precision = kolom predicted+.
 
+
+---
+
+# BANK SOAL TAMBAHAN — Kuis 1 + UTS Genap 23/24 + UTS Genap 24/25
+
+## Kuis 1 Gasal 24/25
+
+### K1A-1: Learning Agent (PENTING)
+**Q:** Pernyataan terkait learning agent yang TIDAK TEPAT?
+- A. Manusia menentukan struktur dasar model melalui formulasi representasi
+- B. **Algoritma pelatihan menghasilkan output prediksi jawaban** ✓ (SALAH)
+- C. Proses belajar melalui pencarian model dgn fungsi evaluasi
+- D. Data untuk melatih model merupakan sampel dari ruang permasalahan
+
+**Pembahasan:** Yang menghasilkan output prediksi = MODEL yang sudah dilatih, bukan algoritma pelatihan.
+
+### K1B-1: Agen Rasional (PENTING)
+**Q:** Pernyataan tentang agen rasional yang TIDAK TEPAT?
+**Jawaban:** Ukuran kinerja pada keadaan INTERNAL agen → SALAH! Harus pada LINGKUNGAN.
+
+### K1B-3: CART + Outlier (PENTING)
+**Q:** CART wajib buang outlier?
+**Jawaban:** TIDAK. DT threshold-based, outlier tidak mempengaruhi urutan percabangan.
+
+### K1B-4: Akurasi vs Precision (PENTING)
+**Q:** Akurasi tinggi → precision pasti tinggi?
+**Jawaban:** TIDAK. Imbalanced: 9900 neg, 100 pos → akurasi 99% tapi precision bisa 0%.
+
+### K1C-3: Akurasi 95% vs Precision 50% (PENTING)
+**Q:** Akurasi >95% → precision tidak mungkin <50%?
+**Jawaban:** BISA <50%. Contoh: 1000 data, TP=10, FP=10, TN=940, FN=40. Acc=95%, Prec=50%.
+
+### K1A-ROC: ROC Curve Essay (PENTING)
+**Q:** Hitung TPR & FPR dari confusion matrix per threshold:
+
+| τ | TP | FP | TN | FN | TPR | FPR |
+|---|----|----|----|----|-----|-----|
+| 0.1 | 45 | 30 | 20 | 5 | 0.90 | 0.60 |
+| 0.3 | 40 | 15 | 35 | 10 | 0.80 | 0.30 |
+| 0.5 | 35 | 10 | 40 | 15 | 0.70 | 0.20 |
+| 0.7 | 28 | 6 | 44 | 22 | 0.56 | 0.12 |
+| 0.9 | 20 | 3 | 47 | 30 | 0.40 | 0.06 |
+
+Threshold optimal ≈ 0.3 (TPR=0.80, FPR=0.30 → keseimbangan terbaik)
+
+### K1A-6: Regresi CART Essay (Kuis)
+**Data lari panjang:** 10 data, fitur: Cuaca cerah?, Angin, target: Peserta
+
+Split Cuaca cerah: Ya→mean=30.83, MSE=27.47 | Tidak→mean=38.75, MSE=17.19
+Weighted MSE = (6/10)×27.47 + (4/10)×17.19 = **23.36**
+
+Lalu bandingkan dengan split Angin (binary split per nilai), pilih yang MSE terkecil.
+
+---
+
+## UTS Genap 23/24 (MCQ)
+
+### G2324-1: Vacuum Cleaner Performance (PENTING)
+**Q:** "Jumlah debu dibersihkan 1 jam" = ukuran pada lingkungan?
+**Jawaban:** FALSE. Jumlah debu = internal. Yang tepat: kebersihan lantai (LINGKUNGAN).
+
+### G2324-11: Matriks Transformasi PCA (PENTING)
+**Q:** Dataset 5000×100 → 10 dimensi. Ukuran matriks transformasi?
+**Jawaban:** 10×100 (k×M). k=PC dipilih, M=fitur awal.
+
+### G2324-15: Binary Split Count (PENTING)
+**Q:** X1(2 nilai)=1, X2(3 nilai)=3, X3(5 numerik→4 midpoint)=4. Total?
+**Jawaban:** 1+3+4 = **8** binary splits.
+
+### G2324-22: F1 >90% → Recall >60%?
+**Q:** F1-score >90% → recall tidak mungkin <60%?
+**Jawaban:** BENAR! F1 = harmonic mean. Jika R<60%, F1 pasti <75%.
+
+### G2324-29: PCA = Feature Selection?
+**Jawaban:** SALAH! PCA = feature EXTRACTION, bukan selection.
+
+### G2324-31: SBFS 15→10 fitur
+**Jawaban:** 15+14+13+12+11 = **65** eksperimen.
+
+---
+
+## UTS Genap 24/25
+
+### G2425-2: Email Spam Environment (PENTING)
+**Q:** Sifat lingkungan agen filter email spam?
+**Jawaban:** Static, Episodic, Discrete.
+
+### G2425-7: Kode Pos + Gaji (PENTING)
+**Q:** Kode pos nominal→tidak boleh MinMax. Gaji=0 bukan missing→tidak perlu imputasi.
+**Jawaban:** Keduanya BENAR.
+
+### G2425-27: RF Decision Boundary
+**Q:** RF 50 tree. Pernyataan paling tepat?
+**Jawaban:** Error training > 0 (random sampling + feature subset). MULTICLASS bukan multilabel.
+
+### G2425-32: DT vs RF Sensitivity
+**Q:** DT lebih sensitif terhadap noise/outlier dibanding RF?
+**Jawaban:** TRUE. Single DT sangat sensitif, RF mengurangi via averaging.
+
+---
+
+## PCA Essay (Kuis Gasal 24/25)
+
+### Soal PCA dengan Eigenvectors
+
+Data: X̄₁=15, X̄₂=22, X̄₃=33
+Eigenvalues: λ₁≈0.02, λ₂≈8.34, λ₃≈54.14
+Eigenvectors: v₁≈(0.18,-2.31,1), v₂≈(-2.10,0.27,1), v₃≈(0.54,0.48,1)
+
+**Ambil 2 PC:** v₃ (λ=54.14) dan v₂ (λ=8.34) → eigenvalue TERBESAR
+
+**Transformasi row-4 (20,25,40):**
+```
+Adjusted: (20-15, 25-22, 40-33) = (5, 3, 7)
+
+T = | 0.54  0.48  1 |
+    |-2.10  0.27  1 |
+
+PC1 = 0.54×5 + 0.48×3 + 1×7 = 11.14
+PC2 = -2.10×5 + 0.27×3 + 1×7 = -2.69
+
+Hasil: (11.14, -2.69)
+```
+
+**Explained Variance:**
+```
+Total = 0.02 + 8.34 + 54.14 = 62.50
+EV = (54.14 + 8.34) / 62.50 = 99.97%
+```
+
+---
+
+## Intrusion Detection Essay (Kuis Gasal 24/25)
+
+100.000 samples, 100 intrusion, 99.900 normal.
+
+**Rancangan:** Stratified train-test split + stratified k-fold CV + SMOTE pada training.
+**Metrik:** RECALL (FN = intrusion tidak terdeteksi → berbahaya!)
+**Evaluasi:** TP=75, FP=300, TN=99600, FN=25 → Recall = 75/100 = **75%**
+
+---
+
+## Cost-Sensitive Learning Essay (UAS Gasal 24/25)
+
+1050 data, kelas "Tinggi"=50.
+Weight = n_samples / (n_classes × n_samples_with_class)
+Weight "Tinggi" = 1050 / (2×50) = **10.5**
+
